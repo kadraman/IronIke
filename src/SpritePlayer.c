@@ -9,7 +9,9 @@
 #include "Scroll.h"
 #include "SpriteManager.h"
 #include "Print.h"
+#include "Sound.h"
 
+#include "zgb_utils.h"
 
 #define DEBUG_CONTROLS
 
@@ -17,54 +19,81 @@ const UINT8 anim_idle[] = {5, 0, 1, 2, 3, 4};				// The first number indicates t
 const UINT8 anim_walk[] = {8, 5, 6, 7, 8, 9, 10, 11, 12};
 const UINT8 anim_jump[] = {3, 13, 14, 15};
 const UINT8 anim_fall[] = {3, 16, 17, 18};
-const UINT8 anim_attack[] = { 3, 19, 20, 211 };
+const UINT8 anim_attack[] = {3, 19, 20, 21};
+const UINT8 anim_hit[] = {4, 22, 23, 24, 25};
 
 typedef enum {
 	OEBBI_STATE_NORMAL,
 	OEBBI_STATE_JUMPING,
 	OEBBI_STATE_FALLING,
-	OEBBI_STATE_ATTACK
+	OEBBI_STATE_ATTACK,
+	OEBBI_STATE_HIT
 } OEBBI_STATE;
 OEBBI_STATE oebbi_state;
 INT16 oebbi_accel_y;
 
 Sprite* attack_sprite;
 
-extern Sprite* game_over_particle;
-
-extern UINT16 reset_x;
-extern UINT16 reset_y;
+extern Sprite* attack_particle;
+extern UINT8 attack_particle_anim_running;
 extern UINT8 level;
-// 
+
+UINT8 lives;
+UINT8 reset_x;
+UINT8 reset_y;
 
 void START() {
 	SetSpriteAnim(THIS, anim_idle, 3u);
-
 	oebbi_accel_y = 0;
-
 	scroll_target = THIS;
-
 	oebbi_state = OEBBI_STATE_NORMAL;
-
 	attack_sprite = 0;
+	lives = 3;
+	reset_x = 50;
+	reset_y = 80;
 }
 
-void Die(Sprite* sprite, UINT8 idx) {
-	SpriteManagerRemove(idx);
-	game_over_particle = SpriteManagerAdd(SpriteParticle, sprite->x, sprite->y);
-	//scroll_target = 0;
-	// if lives < x
-	reset_x = 32;
-	reset_y = 112;
-	SpriteManagerAdd(idx, reset_x, reset_y);
+
+void UpdateHudLives() {
+	for (UINT8 i = 0; i < 3; ++i)
+		UPDATE_HUD_TILE(16 + i, 0, i < lives ? 1 : 2);
+}
+
+void Hit(Sprite* sprite, UINT8 idx) {
+	if (oebbi_state != OEBBI_STATE_HIT) {
+		PlayFx(CHANNEL_1, 10, 0x4f, 0xc7, 0xf3, 0x73, 0x86);
+		oebbi_state = OEBBI_STATE_HIT;
+		//SpriteManagerRemove(idx);
+		attack_particle = SpriteManagerAdd(SpriteParticle, sprite->x, sprite->y);
+
+		if (!lives) {
+			SetState(StateGameOver);
+		} else {
+			lives --;
+			UpdateHudLives();
+			// could be dependent on checkpoint passed?
+			//reset_x = 50;
+			//reset_y = 80;
+			/*
+			// move player to start/checkpoint
+			THIS->x = reset_x;
+			THIS->y = reset_y;
+			oebbi_accel_y = 0;
+			oebbi_state = OEBBI_STATE_NORMAL;
+			attack_sprite = 0;
+			//scroll_target = SpriteManagerAdd(SpritePlayer, reset_x, reset_y);
+			THIS->x = reset_x;
+			THIS->y = reset_y;
+			ScrollRelocateMapTo(0, 0);
+			*/
+		}	
+	}		
 }
 
 UINT8 tile_collision;
 void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
-	DPRINT_POS(0, 1);
-	DPrintf("%d  ", tile_collision);
 	if (tile_collision == 50u) { // spikes
-		Die(sprite, idx);
+		Hit(sprite, idx);
 	}
 	else if (tile_collision == 53u) { // flag/treasure/crown
 		if (level == 1) {
@@ -106,17 +135,12 @@ void UpdateAttackPos() {
 		attack_sprite->x = THIS->x - 16u;
 	else
 		attack_sprite->x = THIS->x + 16u;
-	attack_sprite->y = THIS->y;
+	attack_sprite->y = THIS->y + 11u;
 }
 
 void UPDATE() {
 	UINT8 i;
 	Sprite* spr;
-
-	//DPRINT_POS(0, 0);
-	//DPrintf("x:%d y:%d  ", THIS->x, THIS->y);
-	//DPRINT_POS(0, 1);
-	//DPrintf("%d  ", oebbi_accel_y);
 
 	switch (oebbi_state) {
 		case OEBBI_STATE_NORMAL:
@@ -177,6 +201,20 @@ void UPDATE() {
 				UpdateAttackPos();
 			}
 			break;
+
+		case OEBBI_STATE_HIT:
+			SetSpriteAnim(THIS, anim_hit, 10u);
+			oebbi_accel_y = 0;
+			if (THIS->anim_frame == 3) {
+				// move player to start/checkpoint
+				attack_sprite = 0;
+				//scroll_target = SpriteManagerAdd(SpritePlayer, reset_x, reset_y);
+				THIS->x = reset_x;
+				THIS->y = reset_y;
+				ScrollRelocateMapTo(0, 0);
+				oebbi_state = OEBBI_STATE_NORMAL;
+			}
+			break;
 	}
 
 	//Simple gravity physics 
@@ -202,7 +240,7 @@ void UPDATE() {
 		spr = sprite_manager_sprites[sprite_manager_updatables[i + 1u]];
 		if (spr->type == SpriteOcti) { // || spr->type == SpriteAznar) {
 			if (CheckCollision(THIS, spr)) {
-				Die(THIS, THIS_IDX);
+				Hit(THIS, THIS_IDX);
 			}
 		}
 		else if (spr->type == SpriteFlag) {
@@ -216,12 +254,11 @@ void UPDATE() {
 	if (KEY_TICKED(J_B) && oebbi_state != OEBBI_STATE_ATTACK) {
 		SetSpriteAnim(THIS, anim_attack, 15u);
 		oebbi_state = OEBBI_STATE_ATTACK;
-
-		attack_sprite = SpriteManagerAdd(SpriteAttack, THIS->x, THIS->y);
+		attack_sprite = SpriteManagerAdd(SpritePunch, THIS->x, THIS->y + 11u);
 		UpdateAttackPos();
 	}
 
-	if (keys == 0 && (!(oebbi_state == OEBBI_STATE_JUMPING || oebbi_state == OEBBI_STATE_FALLING || oebbi_state == OEBBI_STATE_ATTACK))) {
+	if (keys == 0 && (!(oebbi_state == OEBBI_STATE_JUMPING || oebbi_state == OEBBI_STATE_FALLING || oebbi_state == OEBBI_STATE_ATTACK || oebbi_state == OEBBI_STATE_HIT))) {
 		SetSpriteAnim(THIS, anim_idle, 15u);
 		oebbi_state = OEBBI_STATE_NORMAL;
 	} 
