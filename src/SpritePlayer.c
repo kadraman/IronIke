@@ -13,9 +13,10 @@
 
 #include "zgb_utils.h"
 
-#define DEBUG_CONTROLS
+//#define DEBUG_CONTROLS
 
-const UINT8 anim_idle[] = {5, 0, 1, 2, 3, 4};				// The first number indicates the number of frames
+// player animations - the first number indicates the number of frames
+const UINT8 anim_idle[] = {5, 0, 1, 2, 3, 4};				
 const UINT8 anim_walk[] = {8, 5, 6, 7, 8, 9, 10, 11, 12};
 const UINT8 anim_jump[] = {3, 13, 14, 15};
 const UINT8 anim_fall[] = {3, 16, 17, 18};
@@ -53,7 +54,6 @@ void START() {
 	reset_y = 80;
 }
 
-
 void UpdateHudLives() {
 	for (UINT8 i = 0; i < 3; ++i)
 		UPDATE_HUD_TILE(16 + i, 0, i < lives ? 1 : 2);
@@ -63,7 +63,6 @@ void Hit(Sprite* sprite, UINT8 idx) {
 	if (oebbi_state != OEBBI_STATE_HIT) {
 		PlayFx(CHANNEL_1, 10, 0x4f, 0xc7, 0xf3, 0x73, 0x86);
 		oebbi_state = OEBBI_STATE_HIT;
-		//SpriteManagerRemove(idx);
 		attack_particle = SpriteManagerAdd(SpriteParticle, sprite->x, sprite->y);
 
 		if (!lives) {
@@ -71,21 +70,6 @@ void Hit(Sprite* sprite, UINT8 idx) {
 		} else {
 			lives --;
 			UpdateHudLives();
-			// could be dependent on checkpoint passed?
-			//reset_x = 50;
-			//reset_y = 80;
-			/*
-			// move player to start/checkpoint
-			THIS->x = reset_x;
-			THIS->y = reset_y;
-			oebbi_accel_y = 0;
-			oebbi_state = OEBBI_STATE_NORMAL;
-			attack_sprite = 0;
-			//scroll_target = SpriteManagerAdd(SpritePlayer, reset_x, reset_y);
-			THIS->x = reset_x;
-			THIS->y = reset_y;
-			ScrollRelocateMapTo(0, 0);
-			*/
 		}	
 	}		
 }
@@ -96,6 +80,7 @@ void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
 		Hit(sprite, idx);
 	}
 	else if (tile_collision == 53u) { // flag/treasure/crown
+		// TODO: go to next level
 		if (level == 1) {
 			//SetState(StateWin);
 		}
@@ -119,10 +104,12 @@ void MoveOebbi(Sprite* sprite, UINT8 idx) {
 		THIS->mirror = V_MIRROR;
 		CheckCollisionTile(sprite, idx);
 	}
+	// TODO: climb up
 	else if (KEY_PRESSED(J_UP)) {
 		//tile_collision = TranslateSprite(sprite, 0, -1 << delta_time);
 		//CheckCollisionTile(sprite, idx);
 	}
+	// TODO: climb down
 	else if (KEY_PRESSED(J_DOWN)) {
 		//tile_collision = TranslateSprite(sprite, 0, 1 << delta_time);
 		//CheckCollisionTile(sprite, idx);
@@ -146,7 +133,7 @@ void UPDATE() {
 		case OEBBI_STATE_NORMAL:
 			MoveOebbi(THIS, THIS_IDX);
 
-			//Choose idle anim or walk
+			// set walk or idle animation
 			if (KEY_PRESSED(J_RIGHT) || KEY_PRESSED(J_LEFT)) {
 				SetSpriteAnim(THIS, anim_walk, 15u);
 			}
@@ -154,15 +141,13 @@ void UPDATE() {
 				SetSpriteAnim(THIS, anim_idle, 15u);
 			}
 
-			//Check jumping
-			if (KEY_TICKED(J_A)) {
+			// pressed A to jump - and not already jumping
+			if (KEY_TICKED(J_A) && oebbi_state != OEBBI_STATE_JUMPING) {
 				oebbi_accel_y = -50;
 				oebbi_state = OEBBI_STATE_JUMPING;
 			}
 
-			//
-
-			//Check falling
+			// check if now falling?
 			if ((oebbi_accel_y >> 4) > 1) {
 				oebbi_state = OEBBI_STATE_FALLING;
 			}
@@ -171,24 +156,12 @@ void UPDATE() {
 
 		case OEBBI_STATE_JUMPING:
 			SetSpriteAnim(THIS, anim_jump, 15u);
-			if (THIS->anim_frame == 2) {
-				oebbi_state = OEBBI_STATE_NORMAL;
-			}
-			else {
-				//SetFrame(THIS, 13);
-				MoveOebbi(THIS, THIS_IDX);
-			}
+			MoveOebbi(THIS, THIS_IDX);
 			break;
 
 		case OEBBI_STATE_FALLING:
-			//SetSpriteAnim(THIS, anim_fall, 15u);
-			//if (THIS->anim_frame == 3) {
-			//	oebbi_state = OEBBI_STATE_NORMAL;
-			//}
-			//else {
-				//SetFrame(THIS, 13);
-			//	MoveOebbi(THIS, THIS_IDX);
-			//}
+			SetSpriteAnim(THIS, anim_fall, 15u);
+			MoveOebbi(THIS, THIS_IDX);
 			break;
 
 		case OEBBI_STATE_ATTACK:
@@ -208,7 +181,6 @@ void UPDATE() {
 			if (THIS->anim_frame == 3) {
 				// move player to start/checkpoint
 				attack_sprite = 0;
-				//scroll_target = SpriteManagerAdd(SpritePlayer, reset_x, reset_y);
 				THIS->x = reset_x;
 				THIS->y = reset_y;
 				ScrollRelocateMapTo(0, 0);
@@ -217,12 +189,13 @@ void UPDATE() {
 			break;
 	}
 
-	//Simple gravity physics 
+	// simple gravity physics until we "collide" with something
 	if (oebbi_accel_y < 40) {
 		oebbi_accel_y += 2;
 	}
 	tile_collision = TranslateSprite(THIS, 0, oebbi_accel_y >> 4);
-	if (!tile_collision && delta_time != 0 && oebbi_accel_y < 40) { //Do another iteration if there is no collision
+	if (!tile_collision && delta_time != 0 && oebbi_accel_y < 40) { 
+		//do another iteration if there is no collision
 		oebbi_accel_y += 2;
 		tile_collision = TranslateSprite(THIS, 0, oebbi_accel_y >> 4);
 	}
@@ -235,7 +208,7 @@ void UPDATE() {
 		CheckCollisionTile(THIS, THIS_IDX);
 	}
 
-	//Check enemy collision
+	// check enemy collision
 	for (i = 0u; i != sprite_manager_updatables[0]; ++i) {
 		spr = sprite_manager_sprites[sprite_manager_updatables[i + 1u]];
 		if (spr->type == SpriteOcti) { // || spr->type == SpriteAznar) {
@@ -251,6 +224,7 @@ void UPDATE() {
 		}
 	}
 
+	// pressed B to attack - and not already attacking
 	if (KEY_TICKED(J_B) && oebbi_state != OEBBI_STATE_ATTACK) {
 		SetSpriteAnim(THIS, anim_attack, 15u);
 		oebbi_state = OEBBI_STATE_ATTACK;
@@ -258,6 +232,7 @@ void UPDATE() {
 		UpdateAttackPos();
 	}
 
+	// nothing happening lets revert to idle state
 	if (keys == 0 && (!(oebbi_state == OEBBI_STATE_JUMPING || oebbi_state == OEBBI_STATE_FALLING || oebbi_state == OEBBI_STATE_ATTACK || oebbi_state == OEBBI_STATE_HIT))) {
 		SetSpriteAnim(THIS, anim_idle, 15u);
 		oebbi_state = OEBBI_STATE_NORMAL;
