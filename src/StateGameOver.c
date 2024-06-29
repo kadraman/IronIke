@@ -13,7 +13,7 @@ IMPORT_MAP(gameover);
 
 void START() {
 	InitScroll(BANK(gameover), &gameover, 0, 0);
-
+	HIDE_WIN;
 	//PlayMusic(gameover, 0);
 }
 

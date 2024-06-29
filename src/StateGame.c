@@ -11,7 +11,8 @@ IMPORT_MAP(map);
 IMPORT_MAP(hud);
 
 // 50 - spikes
-UINT8 collision_tiles[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 50, 0};
+// 52 - flag
+UINT8 collision_tiles[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 50, 52, 0};
 
 UINT8 level;
 
@@ -21,6 +22,7 @@ void START() {
 
 	scroll_target = SpriteManagerAdd(SpritePlayer, 50, 80);
 	InitScroll(BANK(map), &map, collision_tiles, 0);
+	scroll_bottom_movement_limit = 120;
 	INIT_HUD(hud);
 
 	NR52_REG = 0x80; //Enables sound, you should always setup this first

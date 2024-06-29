@@ -14,6 +14,8 @@
 #include "zgb_utils.h"
 
 //#define DEBUG_CONTROLS
+#define MAX_LIVES 3
+#define MAX_LEVEL 1
 
 // player animations - the first number indicates the number of frames
 const UINT8 anim_idle[] = {5, 0, 1, 2, 3, 4};				
@@ -49,13 +51,14 @@ void START() {
 	scroll_target = THIS;
 	oebbi_state = OEBBI_STATE_NORMAL;
 	attack_sprite = 0;
-	lives = 3;
+	lives = MAX_LIVES;
+	level = 1;
 	reset_x = 50;
 	reset_y = 80;
 }
 
 void UpdateHudLives() {
-	for (UINT8 i = 0; i < 3; ++i)
+	for (UINT8 i = 0; i < MAX_LIVES; ++i)
 		UPDATE_HUD_TILE(16 + i, 0, i < lives ? 1 : 2);
 }
 
@@ -65,10 +68,9 @@ void Hit(Sprite* sprite, UINT8 idx) {
 		oebbi_state = OEBBI_STATE_HIT;
 		attack_particle = SpriteManagerAdd(SpriteParticle, sprite->x, sprite->y);
 
-		if (!lives) {
+		if (--lives == 0) {
 			SetState(StateGameOver);
 		} else {
-			lives --;
 			UpdateHudLives();
 		}	
 	}		
@@ -79,10 +81,10 @@ void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
 	if (tile_collision == 50u) { // spikes
 		Hit(sprite, idx);
 	}
-	else if (tile_collision == 53u) { // flag/treasure/crown
-		// TODO: go to next level
-		if (level == 1) {
-			//SetState(StateWin);
+	else if (tile_collision == 52u) { // flag
+		// go to next level or complete game
+		if (level == MAX_LEVEL) {
+			SetState(StateWin);
 		}
 		else {
 			//level++;
@@ -211,15 +213,16 @@ void UPDATE() {
 	// check enemy collision
 	for (i = 0u; i != sprite_manager_updatables[0]; ++i) {
 		spr = sprite_manager_sprites[sprite_manager_updatables[i + 1u]];
-		if (spr->type == SpriteOcti) { // || spr->type == SpriteAznar) {
+		if (spr->type == SpriteEnemy1) { // || spr->type == SpriteEnemy2) {
 			if (CheckCollision(THIS, spr)) {
 				Hit(THIS, THIS_IDX);
 			}
 		}
 		else if (spr->type == SpriteFlag) {
 			if (CheckCollision(THIS, spr)) {
-				reset_x = spr->x;
-				reset_y = spr->y;
+				// example save_point?
+				//reset_x = spr->x;
+				//reset_y = spr->y;
 			}
 		}
 	}

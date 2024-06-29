@@ -19,7 +19,7 @@ void UPDATE() {
 
 	for(i = 0u; i != sprite_manager_updatables[0]; ++i) {
 		spr = sprite_manager_sprites[sprite_manager_updatables[i + 1u]];
-		if (spr->type == SpriteOcti) {
+		if (spr->type == SpriteEnemy1) {
 			if(CheckCollision(THIS, spr)) {
 				spr2 = SpriteManagerAdd(SpriteParticle, spr->x, spr->y);
 
