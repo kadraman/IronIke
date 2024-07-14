@@ -7,6 +7,8 @@
 #include "Keys.h"
 #include "Music.h"
 
+#include "GlobalVars.h"
+
 IMPORT_MAP(gameover);
 
 //DECLARE_MUSIC(gameover);
@@ -19,6 +21,7 @@ void START() {
 
 void UPDATE() {
 	if(KEY_TICKED(J_START) | KEY_TICKED(J_A) | KEY_TICKED(J_B)) {
+		g_jewell_counter = 0;
 		SetState(StateGame);
 	}
 }

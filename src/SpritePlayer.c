@@ -12,10 +12,10 @@
 #include "Sound.h"
 
 #include "zgb_utils.h"
+#include "GlobalVars.h"
+#include "Hud.h"
 
 //#define DEBUG_CONTROLS
-#define MAX_LIVES 3
-#define MAX_LEVEL 1
 
 // player animations - the first number indicates the number of frames
 const UINT8 anim_idle[] = {5, 0, 1, 2, 3, 4};				
@@ -35,31 +35,27 @@ typedef enum {
 OEBBI_STATE oebbi_state;
 INT16 oebbi_accel_y;
 
+Sprite* player_sprite;
 Sprite* attack_sprite;
 
 extern Sprite* attack_particle;
 extern UINT8 attack_particle_anim_running;
-extern UINT8 level;
 
-UINT8 lives;
+UINT8 g_lives;
 UINT8 reset_x;
 UINT8 reset_y;
 
 void START() {
+	player_sprite = THIS;
 	SetSpriteAnim(THIS, anim_idle, 3u);
 	oebbi_accel_y = 0;
 	scroll_target = THIS;
 	oebbi_state = OEBBI_STATE_NORMAL;
 	attack_sprite = 0;
-	lives = MAX_LIVES;
-	level = 1;
-	reset_x = 50;
+	g_lives = MAX_LIVES;
+	//g_jewell_counter = 0;
+	reset_x = 20;
 	reset_y = 80;
-}
-
-void UpdateHudLives() {
-	for (UINT8 i = 0; i < MAX_LIVES; ++i)
-		UPDATE_HUD_TILE(16 + i, 0, i < lives ? 1 : 2);
 }
 
 void Hit(Sprite* sprite, UINT8 idx) {
@@ -68,26 +64,32 @@ void Hit(Sprite* sprite, UINT8 idx) {
 		oebbi_state = OEBBI_STATE_HIT;
 		attack_particle = SpriteManagerAdd(SpriteParticle, sprite->x, sprite->y);
 
-		if (--lives == 0) {
+		if (--g_lives == 0) {
 			SetState(StateGameOver);
 		} else {
-			UpdateHudLives();
+			Hud_Update();
 		}	
 	}		
+}
+
+void Collected(Sprite* sprite, UINT8 idx) {
+	PlayFx(CHANNEL_1, 10, 0x4f, 0xc7, 0xf3, 0x73, 0x86);
+	SpriteManagerRemoveSprite(sprite);
+	g_jewell_counter++;
 }
 
 UINT8 tile_collision;
 void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
 	if (tile_collision == 50u) { // spikes
 		Hit(sprite, idx);
-	}
-	else if (tile_collision == 52u) { // flag
+	} else if (tile_collision == 51u) { // jewell
+		//Collected(sprite, idx);
+	} else if (tile_collision == 52u) { // flag
 		// go to next level or complete game
-		if (level == MAX_LEVEL) {
+		if (g_level_current == MAX_LEVEL) {
 			SetState(StateWin);
-		}
-		else {
-			//level++;
+		} else {
+			g_level_current++;
 			//reset_x = 32;
 			//reset_y = 112;
 			SetState(StateGame);
@@ -185,6 +187,7 @@ void UPDATE() {
 				attack_sprite = 0;
 				THIS->x = reset_x;
 				THIS->y = reset_y;
+				g_jewell_counter = 0;
 				ScrollRelocateMapTo(0, 0);
 				oebbi_state = OEBBI_STATE_NORMAL;
 			}
@@ -210,15 +213,18 @@ void UPDATE() {
 		CheckCollisionTile(THIS, THIS_IDX);
 	}
 
-	// check enemy collision
+	// check sprite collision
 	for (i = 0u; i != sprite_manager_updatables[0]; ++i) {
 		spr = sprite_manager_sprites[sprite_manager_updatables[i + 1u]];
 		if (spr->type == SpriteEnemy1) { // || spr->type == SpriteEnemy2) {
 			if (CheckCollision(THIS, spr)) {
 				Hit(THIS, THIS_IDX);
 			}
-		}
-		else if (spr->type == SpriteFlag) {
+		} else if (spr->type == SpriteJewell1) {
+			if (CheckCollision(THIS, spr)) {
+				Collected(spr, i);
+			}
+		} else if (spr->type == SpriteFlag) {
 			if (CheckCollision(THIS, spr)) {
 				// example save_point?
 				//reset_x = spr->x;

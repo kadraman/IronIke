@@ -7,6 +7,8 @@
 #include "Keys.h"
 #include "Music.h"
 
+#include "GlobalVars.h"
+
 IMPORT_MAP(win);
 
 //DECLARE_MUSIC(win);
@@ -19,6 +21,8 @@ void START() {
 
 void UPDATE() {
 	if(KEY_TICKED(J_START) | KEY_TICKED(J_A) | KEY_TICKED(J_B)) {
+		g_jewell_count = 0;
+		g_level_current = 1;
 		SetState(StateGame);
 	}
 }
