@@ -21,7 +21,7 @@ void START() {
 
 void UPDATE() {
 	if(KEY_TICKED(J_START) | KEY_TICKED(J_A) | KEY_TICKED(J_B)) {
-		g_jewell_count = 0;
+		g_jewell_counter = 0;
 		g_level_current = 1;
 		SetState(StateGame);
 	}

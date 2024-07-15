@@ -180,7 +180,7 @@ void UPDATE() {
 			break;
 
 		case OEBBI_STATE_HIT:
-			SetSpriteAnim(THIS, anim_hit, 10u);
+			SetSpriteAnim(THIS, anim_hit, 15u);
 			oebbi_accel_y = 0;
 			if (THIS->anim_frame == 3) {
 				// move player to start/checkpoint
