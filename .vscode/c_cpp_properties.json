@@ -6,7 +6,7 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/include",
                 "${env:ZGB_PATH}/include",
-                "${env:ZGB_PATH}/../env/gbdk/include"
+                "${env:GBDK_HOME}/include/**"
             ],
             "defines": [
                 "_DEBUG",
