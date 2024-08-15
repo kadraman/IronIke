@@ -16,6 +16,14 @@
     "files.associations": {
         "hud.h": "c",
         "zgb_utils.h": "c",
-        "keys.h": "c"
+        "keys.h": "c",
+        "compare": "c",
+        "cstddef": "c",
+        "limits": "c",
+        "type_traits": "c",
+        "vector": "c",
+        "xmemory": "c",
+        "xstring": "c",
+        "xutility": "c"
     }
 }
