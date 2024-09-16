@@ -11,6 +11,7 @@ STATE_DEF_END
 _SPRITE_COLOR(SpritePlayer,	    player)\
 _SPRITE_COLOR(SpriteBullet,     bullet)\
 _SPRITE_COLOR(SpriteEnemy1,     enemy1)\
+_SPRITE_COLOR(SpriteEnemy2,     enemy2)\
 _SPRITE_COLOR(SpriteParticle,   particles)\
 _SPRITE_COLOR(SpriteFlag,       flag)\
 _SPRITE_COLOR(SpriteJewell1,    jewell1)\
