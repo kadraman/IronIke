@@ -1,3 +1,3 @@
 cd src
-make
+make gbc
 cd ..

@@ -5,6 +5,7 @@
 #include "Scroll.h"
 #include "Sprite.h"
 #include "SpriteManager.h"
+#include "SpritePlayer.h"
 
 #include "GlobalVars.h"
 
@@ -15,12 +16,14 @@ static UINT8 lastLives = 0;
 static UINT8 lastJewell = 0;
 
 extern Sprite* player_sprite;
+extern PlayerData* player_data;
 
 void Hud_Init() BANKED {
     INIT_HUD(hud);
 
     // prime the last values so they all get updated
-    lastLives = g_lives + 1;
+    //lastLives = g_lives + 1;
+    lastLives = player_data->Lives + 1;
     lastJewell = g_jewell_counter + 1;
 }
 
@@ -65,11 +68,14 @@ void Hud_Update(void) BANKED {
         UPDATE_HUD_TILE (4, 0, 4 + ones);
     }
 
-    if (lastLives != g_lives) {
+    //if (lastLives != g_lives) {
+    if (lastLives != player_data->Lives) {
         // update HUD lives
-        lastLives = g_lives;
+        //lastLives = g_lives;
+        lastLives = player_data->Lives;
         for (UINT8 i = 0; i < MAX_LIVES; ++i) {
-            UPDATE_HUD_TILE(16 + i, 0, i < g_lives ? 1 : 2);
+            //UPDATE_HUD_TILE(16 + i, 0, i < g_lives ? 1 : 2);
+            UPDATE_HUD_TILE(16 + i, 0, i < player_data->Lives ? 1 : 2);
         }
     }
 

@@ -45,6 +45,7 @@ typedef struct {
 	UINT8 Flags;
 	INT8 Jump;
 	UINT8 Lives;
+	UINT8 Bullets;
 	UINT8 Invincible;
 } PlayerData;
 

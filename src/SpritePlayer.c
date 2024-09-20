@@ -23,7 +23,7 @@ const UINT8 anim_victory[] = {2, 14, 15}; // TBD
 
 
 Sprite* player_sprite;
-PlayerData* data;
+PlayerData* player_data;
 extern Sprite* attack_particle;
 static PlayerState curPlayerState, prevPlayerState;
 static AnimationState lastAnimState, currentAnimState;
@@ -84,7 +84,8 @@ void Hit(Sprite* sprite, UINT8 idx) {
 		NR50_REG = 0x77; //Max volume
 		PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
 		SetAnimationState(HIT);
-		--g_lives;
+		//--g_lives;
+		player_data->Lives = player_data->Lives-1
 		Hud_Update();
 	}		
 }
@@ -207,6 +208,7 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 
 void START() {
 	player_sprite = THIS;
+	player_data->Lives = MAX_LIVES;
 	curPlayerState = PLAYER_STATE_IDLE;
 	accel_y = 0;
 	shoot_cooldown = 0;
@@ -214,7 +216,7 @@ void START() {
 	scroll_target = THIS;
 	lastAnimState = currentAnimState = WALK_IDLE;
 	SetAnimationState(currentAnimState);
-	g_lives = MAX_LIVES;
+	//g_lives = MAX_LIVES;
 	reset_x = 20;
 	reset_y = 80;
 }
@@ -241,7 +243,8 @@ void UPDATE() {
 
 		if (THIS->anim_frame == 4) {
 			SHOW_BKG;
-			if (g_lives == 0) { SetState(StateGameOver); }
+			if (player_data->Lives == 0) { SetState(StateGameOver); }
+			//if (g_lives == 0) { SetState(StateGameOver); }
 			// move player to start/checkpoint
 			THIS->x = reset_x;
 			THIS->y = reset_y;

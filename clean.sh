@@ -1,5 +1,5 @@
 #!/bin/sh
 
 cd src
-make clean
+make gbc-clean
 cd ..

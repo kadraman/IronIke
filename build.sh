@@ -1,6 +1,6 @@
 #!/bin/sh
 
 cd src
-make
+make gbc
 cd ..
-java -jar $ZGB_HOME/ZGB/tools/Emulicious/Emulicious.jar bin/gbc/iron-ike.gbc
+java -jar $ZGB_HOME/ZGB/tools/Emulicious/Emulicious.jar bin/gbc/IronIke.gbc

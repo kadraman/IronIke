@@ -1,9 +1,9 @@
-PROJECT_NAME = iron-ike 
+PROJECT_NAME = IronIke
 
 # Set platforms to build here, spaced separated. (These are in the separate Makefile.targets)
 # They can also be built/cleaned individually: "make gg" and "make gg-clean"
 # Possible are: gb gbc pocket megaduck sms gg
-TARGETS=gbc
+TARGETS=gbc pocket
 
 # Builds all targets sequentially
 all: $(TARGETS)
@@ -17,4 +17,5 @@ MUSIC_PLAYER = HUGETRACKER
 # Default hardware sprites size: SPRITES_8x16(default) or SPRITES_8x8
 DEFAULT_SPRITES_SIZE = SPRITES_8x8
 
-include $(ZGB_PATH)/src/MakefileCommon
+#include $(ZGB_PATH)/src/MakefileCommon
+include $(subst ',,$(subst \,/,'$(ZGB_PATH)'))/src/MakefileCommon
