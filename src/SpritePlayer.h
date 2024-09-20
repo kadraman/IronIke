@@ -42,11 +42,11 @@ typedef enum {
 } AnimationState;
 
 typedef struct {
-	UINT8 Flags;
-	INT8 Jump;
-	UINT8 Lives;
-	UINT8 Bullets;
-	UINT8 Invincible;
+	UINT8 flags;
+	INT8 jump;
+	UINT8 lives;
+	UINT8 bullets;
+	UINT8 invincible;
 } PlayerData;
 
 #endif // SPRITEPLAYER_H

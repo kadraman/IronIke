@@ -1,5 +1,6 @@
 #!/bin/sh
 
+rm -f bin/gvc/IronIke.gbc
 cd src
 make gbc
 cd ..

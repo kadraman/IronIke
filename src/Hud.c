@@ -13,7 +13,7 @@ IMPORT_MAP (hud);
 
 // saved last drawn values, to work out what to update on hud
 static UINT8 lastLives = 0;
-static UINT8 lastJewell = 0;
+static UINT8 lastBullets = 0;
 
 extern Sprite* player_sprite;
 extern PlayerData* player_data;
@@ -23,8 +23,9 @@ void Hud_Init() BANKED {
 
     // prime the last values so they all get updated
     //lastLives = g_lives + 1;
-    lastLives = player_data->Lives + 1;
-    lastJewell = g_jewell_counter + 1;
+    lastLives = player_data->lives + 1;
+    //lastJewell = g_jewell_counter + 1;
+    lastBullets = player_data->bullets + 1;
 }
 
 static UINT8 getTens (UINT8 full) {
@@ -60,22 +61,26 @@ void Hud_Update(void) BANKED {
     UINT8 tens;
     UINT8 ones;
 
-    if (lastJewell != g_jewell_counter) {
-        lastJewell = g_jewell_counter;
-        tens = getTens(g_jewell_counter);
-        ones = g_jewell_counter - (tens * 10);
+    //if (lastJewell != g_jewell_counter) {
+    if (lastBullets != player_data->bullets) {
+        //lastJewell = g_jewell_counter;
+        lastBullets = player_data->bullets;
+        //tens = getTens(g_jewell_counter);
+        tens = getTens(player_data->bullets);
+        //ones = g_jewell_counter - (tens * 10);
+        ones = player_data->bullets - (tens * 10);
         UPDATE_HUD_TILE (3, 0, 4 + tens);
         UPDATE_HUD_TILE (4, 0, 4 + ones);
     }
 
     //if (lastLives != g_lives) {
-    if (lastLives != player_data->Lives) {
+    if (lastLives != player_data->lives) {
         // update HUD lives
         //lastLives = g_lives;
-        lastLives = player_data->Lives;
+        lastLives = player_data->lives;
         for (UINT8 i = 0; i < MAX_LIVES; ++i) {
             //UPDATE_HUD_TILE(16 + i, 0, i < g_lives ? 1 : 2);
-            UPDATE_HUD_TILE(16 + i, 0, i < player_data->Lives ? 1 : 2);
+            UPDATE_HUD_TILE(16 + i, 0, i < player_data->lives ? 1 : 2);
         }
     }
 

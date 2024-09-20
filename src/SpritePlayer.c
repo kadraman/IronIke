@@ -85,7 +85,7 @@ void Hit(Sprite* sprite, UINT8 idx) {
 		PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
 		SetAnimationState(HIT);
 		//--g_lives;
-		player_data->Lives = player_data->Lives-1
+		player_data->lives--;
 		Hud_Update();
 	}		
 }
@@ -93,7 +93,8 @@ void Hit(Sprite* sprite, UINT8 idx) {
 void Collected(Sprite* sprite, UINT8 idx) {
 	PlayFx(CHANNEL_1, 10, 0x4f, 0xc7, 0xf3, 0x73, 0x86);
 	SpriteManagerRemoveSprite(sprite);
-	g_jewell_counter++;
+	//g_jewell_counter++;
+	player_data->bullets++;
 }
 
 void Shoot() {
@@ -208,7 +209,8 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 
 void START() {
 	player_sprite = THIS;
-	player_data->Lives = MAX_LIVES;
+	player_data->lives = MAX_LIVES;
+	player_data->bullets = 0;
 	curPlayerState = PLAYER_STATE_IDLE;
 	accel_y = 0;
 	shoot_cooldown = 0;
@@ -243,12 +245,13 @@ void UPDATE() {
 
 		if (THIS->anim_frame == 4) {
 			SHOW_BKG;
-			if (player_data->Lives == 0) { SetState(StateGameOver); }
+			if (player_data->lives <= 0) { SetState(StateGameOver); }
 			//if (g_lives == 0) { SetState(StateGameOver); }
 			// move player to start/checkpoint
 			THIS->x = reset_x;
 			THIS->y = reset_y;
-			g_jewell_counter = 0;
+			//g_jewell_counter = 0;
+			plaer_data->bullets = 0;
 			ScrollRelocateMapTo(0, 0);
 			SetPlayerState(PLAYER_STATE_IDLE);
 			SetAnimationState(WALK_IDLE);
