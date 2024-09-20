@@ -1,6 +1,6 @@
-# Zap Tungsten
+# Iron Ike
 
-A simple platformer for the GameBoy Color using [CrossZGB](https://github.com/gbdk-2020/CrossZGB/releases)
+An action platformer for the GameBoy Color written using [CrossZGB](https://github.com/gbdk-2020/CrossZGB/releases)
 
 ## Building
 
