@@ -3,6 +3,8 @@
 
 #define STATES \
 _STATE(StateGame)\
+_STATE(StateLevel1)\
+_STATE(StateLevel2)\
 _STATE(StateGameOver)\
 _STATE(StateWin)\
 STATE_DEF_END
