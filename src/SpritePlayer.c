@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include "SpritePlayer.h"
 #include "Keys.h"
 #include "Scroll.h"
@@ -5,7 +6,6 @@
 #include "Sound.h"
 #include "Banks/SetAutoBank.h"
 #include "gb/gb.h"
-
 
 // player animations - the first number indicates the number of frames
 const UINT8 anim_idle[] = {4, 0, 1, 2, 3};		
@@ -23,16 +23,14 @@ const UINT8 anim_victory[] = {2, 14, 15}; // TBD
 
 
 Sprite* player_sprite;
-PlayerData* player_data;
 extern Sprite* attack_particle;
 static PlayerState curPlayerState, prevPlayerState;
 static AnimationState lastAnimState, currentAnimState;
 
 INT16 accel_y;
-UINT8 g_lives;
 UINT8 reset_x;
 UINT8 reset_y;
-INT8 shoot_cooldown;
+UINT8 shoot_cooldown;
 UINT8 bg_hidden;
 
 static void SetPlayerState(PlayerState state) {
@@ -76,6 +74,7 @@ static AnimationState GetAnimationState(void) {
 
 
 void Hit(Sprite* sprite, UINT8 idx) {
+	PlayerData* data = (PlayerData*)THIS->custom_data;
 	if (GetPlayerState() != PLAYER_STATE_HIT) {
 		SetPlayerState(PLAYER_STATE_HIT);
 		gbt_stop();
@@ -84,20 +83,23 @@ void Hit(Sprite* sprite, UINT8 idx) {
 		NR50_REG = 0x77; //Max volume
 		PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
 		SetAnimationState(HIT);
-		//--g_lives;
-		player_data->lives--;
+		data->lives--;
 		Hud_Update();
 	}		
 }
 
 void Collected(Sprite* sprite, UINT8 idx) {
-	PlayFx(CHANNEL_1, 10, 0x4f, 0xc7, 0xf3, 0x73, 0x86);
-	SpriteManagerRemoveSprite(sprite);
-	//g_jewell_counter++;
-	player_data->bullets++;
+	PlayerData* data = (PlayerData*)THIS->custom_data;
+	// now done at sprite level
+	//PlayFx(CHANNEL_1, 10, 0x4f, 0xc7, 0xf3, 0x73, 0x86);
+	//SpriteManagerRemoveSprite(sprite);
+	data->bullets+=10;
 }
 
 void Shoot() {
+	PlayerData* data = (PlayerData*)THIS->custom_data;
+	// no bullets left
+	if (data->bullets == 0) return;
 	SetAnimationState(ATTACK);
 	Sprite* bullet_sprite = SpriteManagerAdd(SpriteBullet, 0, 0);
 	bullet_sprite->mirror = THIS->mirror;
@@ -108,14 +110,15 @@ void Shoot() {
 	}	
 	bullet_sprite->y = THIS->y + 12u;
 	shoot_cooldown = 10;
+	data->bullets--;
 }
 
 UINT8 tile_collision;
 void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
 	if (tile_collision == 50u) { // spikes
 		Hit(sprite, idx);
-	} else if (tile_collision == 51u) { // jewell
-		Collected(sprite, idx);
+	} else if (tile_collision == 51u) { // bullet box
+		Collected(sprite, tile_collision);
 	} else if (tile_collision == 52u) { // flag
 		// go to next level or complete game
 		if (g_level_current == MAX_LEVEL) {
@@ -130,6 +133,7 @@ void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
 }
 
 void HandleInput(Sprite* sprite, UINT8 idx) {
+	if (GetPlayerState() == PLAYER_STATE_HIT) return;
 	if (KEY_PRESSED(J_RIGHT)) {
 		if (GetPlayerState() == PLAYER_STATE_CLIMBING) {
 			UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 22u) >> 3);
@@ -208,9 +212,10 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 //
 
 void START() {
+	PlayerData* data = (PlayerData*)THIS->custom_data;
 	player_sprite = THIS;
-	player_data->lives = MAX_LIVES;
-	player_data->bullets = 0;
+	data->lives = MAX_LIVES;
+	data->bullets = 0;
 	curPlayerState = PLAYER_STATE_IDLE;
 	accel_y = 0;
 	shoot_cooldown = 0;
@@ -218,12 +223,12 @@ void START() {
 	scroll_target = THIS;
 	lastAnimState = currentAnimState = WALK_IDLE;
 	SetAnimationState(currentAnimState);
-	//g_lives = MAX_LIVES;
 	reset_x = 20;
 	reset_y = 80;
 }
 
 void UPDATE() {
+	PlayerData* data = (PlayerData*)THIS->custom_data;
 	UINT8 i;
 	Sprite* spr;
 
@@ -245,13 +250,11 @@ void UPDATE() {
 
 		if (THIS->anim_frame == 4) {
 			SHOW_BKG;
-			if (player_data->lives <= 0) { SetState(StateGameOver); }
-			//if (g_lives == 0) { SetState(StateGameOver); }
+			if (data->lives <= 0) { SetState(StateGameOver); }
 			// move player to start/checkpoint
 			THIS->x = reset_x;
 			THIS->y = reset_y;
-			//g_jewell_counter = 0;
-			plaer_data->bullets = 0;
+			data->bullets = 0;
 			ScrollRelocateMapTo(0, 0);
 			SetPlayerState(PLAYER_STATE_IDLE);
 			SetAnimationState(WALK_IDLE);

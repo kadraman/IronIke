@@ -7,8 +7,6 @@
 #include "SpriteManager.h"
 #include "SpritePlayer.h"
 
-#include "GlobalVars.h"
-
 IMPORT_MAP (hud);
 
 // saved last drawn values, to work out what to update on hud
@@ -16,16 +14,13 @@ static UINT8 lastLives = 0;
 static UINT8 lastBullets = 0;
 
 extern Sprite* player_sprite;
-extern PlayerData* player_data;
 
 void Hud_Init() BANKED {
+    PlayerData* data = (PlayerData*)player_sprite->custom_data;
     INIT_HUD(hud);
-
     // prime the last values so they all get updated
-    //lastLives = g_lives + 1;
-    lastLives = player_data->lives + 1;
-    //lastJewell = g_jewell_counter + 1;
-    lastBullets = player_data->bullets + 1;
+    lastLives = data->lives + 1;
+    lastBullets = data->bullets + 1;
 }
 
 static UINT8 getTens (UINT8 full) {
@@ -57,30 +52,25 @@ static void PutU16 (UINT16 v, UINT8 at)
      UPDATE_HUD_TILE (at++, 0, 4 + ones);
 }
 
-void Hud_Update(void) BANKED {
+void Hud_Update() BANKED {
+    PlayerData* data = (PlayerData*)player_sprite->custom_data;
     UINT8 tens;
     UINT8 ones;
 
-    //if (lastJewell != g_jewell_counter) {
-    if (lastBullets != player_data->bullets) {
-        //lastJewell = g_jewell_counter;
-        lastBullets = player_data->bullets;
-        //tens = getTens(g_jewell_counter);
-        tens = getTens(player_data->bullets);
-        //ones = g_jewell_counter - (tens * 10);
-        ones = player_data->bullets - (tens * 10);
+    if (lastBullets != data->bullets) {
+        lastBullets = data->bullets;
+        tens = getTens(data->bullets);
+        ones = data->bullets - (tens * 10);
         UPDATE_HUD_TILE (3, 0, 4 + tens);
         UPDATE_HUD_TILE (4, 0, 4 + ones);
     }
 
     //if (lastLives != g_lives) {
-    if (lastLives != player_data->lives) {
+    if (lastLives != data->lives) {
         // update HUD lives
-        //lastLives = g_lives;
-        lastLives = player_data->lives;
+        lastLives = data->lives;
         for (UINT8 i = 0; i < MAX_LIVES; ++i) {
-            //UPDATE_HUD_TILE(16 + i, 0, i < g_lives ? 1 : 2);
-            UPDATE_HUD_TILE(16 + i, 0, i < player_data->lives ? 1 : 2);
+            UPDATE_HUD_TILE(16 + i, 0, i < data->lives ? 1 : 2);
         }
     }
 

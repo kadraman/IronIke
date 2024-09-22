@@ -17,6 +17,7 @@
 #define WALK_ANIM_SPEED 10
 #define HIT_ANIM_SPEED 10
 #define VICTORY_ANIM_SPEED 8
+#define MAX_BULLETS 255
 
 typedef enum {
 	PLAYER_STATE_IDLE,

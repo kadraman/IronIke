@@ -8,6 +8,7 @@
 
 #include "Sound.h"
 
+
 void START() {
 	PlayFx(CHANNEL_1, 10, 0x2C, 0xD8, 0xF3, 0x62, 0xC7);
 }
@@ -32,7 +33,7 @@ void UPDATE() {
 		spr = sprite_manager_sprites[sprite_manager_updatables[i + 1u]];
 		if (spr->type == SpriteEnemy1) { // || spr->type == SpriteEnemy2) {
 			if(CheckCollision(THIS, spr)) {
-				//if(spr->type != SpriteMushroom || spr->anim_data[1 + spr->anim_frame] == 1u) { //Mushroom can only die on frame 1
+				//if(spr->type != XXXX || spr->anim_data[1 + spr->anim_frame] == 1u) { //XXX can only die on frame 1
 				//	SpriteManagerRemove(i);
 				//	PlayFx(CHANNEL_4, 20, 0x0d, 0xff, 0x7d, 0xc0);
 				//}

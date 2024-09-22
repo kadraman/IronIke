@@ -25,6 +25,7 @@
         "xmemory": "c",
         "xstring": "c",
         "xutility": "c",
-        "sprite.h": "c"
+        "sprite.h": "c",
+        "setautobank.h": "c"
     }
 }

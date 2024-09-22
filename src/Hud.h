@@ -7,6 +7,6 @@
 #define DEBUG_HUD 0
 
 void Hud_Init() BANKED;
-void Hud_Update (void) BANKED;
+void Hud_Update () BANKED;
 
 #endif // HUD_H

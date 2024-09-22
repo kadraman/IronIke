@@ -7,6 +7,7 @@
 #include "Sound.h"
 
 #include "GlobalVars.h"
+#include "SpritePlayer.h"
 #include "Hud.h"
 
 IMPORT_TILES(font);
@@ -19,15 +20,10 @@ IMPORT_MAP(hud);
 UINT8 collision_tiles[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 50, 52, 0};
 
 UINT8 g_level_current = 1;
-UINT8 g_jewell_counter = 0;
-UINT8 g_level_jewell_counter = 0;
-
 extern Sprite* player_sprite; 
 Sprite* attack_particle;
 
 void START() {
-
-	g_level_jewell_counter = 0;
 
 	switch (g_level_current) {
 		case 1:
