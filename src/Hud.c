@@ -7,6 +7,8 @@
 #include "SpriteManager.h"
 #include "SpritePlayer.h"
 
+#include "GlobalVars.h"
+
 IMPORT_MAP (hud);
 
 // saved last drawn values, to work out what to update on hud
@@ -74,15 +76,15 @@ void Hud_Update() BANKED {
         }
     }
 
-#if(DEBUG_HUD ==1)
+#ifdef DEBUG_HUD
     // player position
-    //PutU16 (player_sprite->x, 6);
-    //PutU16 (player_sprite->y, 6 );
+    PutU16 (player_sprite->x, 6);
+    PutU16 (player_sprite->y, 11);
     // current tile
     UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 16u) >> 3);
-    PutU16(tile, 6);
-    UINT8 af = player_sprite->anim_frame;
-    PutU16(af, 8);
+    PutU16(tile, 16);
+    //UINT8 af = player_sprite->anim_frame;
+    //PutU16(af, 8);
 #endif
 
 }

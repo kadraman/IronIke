@@ -4,7 +4,7 @@
 #include "Banks/SetAutoBank.h"
 #include "GlobalVars.h"
 
-#define DEBUG_HUD 0
+#define DEBUG_HUD 1
 
 void Hud_Init() BANKED;
 void Hud_Update () BANKED;

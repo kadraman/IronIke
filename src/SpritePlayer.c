@@ -32,6 +32,7 @@ UINT8 reset_x;
 UINT8 reset_y;
 UINT8 shoot_cooldown;
 UINT8 bg_hidden;
+UINT8 g_player_region;
 
 static void SetPlayerState(PlayerState state) {
 	prevPlayerState = curPlayerState;
@@ -125,9 +126,10 @@ void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
 			SetState(StateWin);
 		} else {
 			g_level_current++;
+			SetState(g_level_current);
 			//reset_x = 32;
 			//reset_y = 112;
-			SetState(StateGame);
+			//SetState(StateGame);
 		}
 	}
 }

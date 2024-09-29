@@ -9,7 +9,7 @@ UINT8 GetTileReplacement(UINT8* tile_ptr, UINT8* tile) {
 		switch (*tile_ptr) {
 			case 101: 	return SpriteEnemy1;
 			case 102:	return SpriteEnemy2;
-			case 51: 	return SpriteJewell1;
+			//case 51: 	return SpriteJewell1;
 			case 52: 	return SpriteFlag;
 		}
 		*tile = *tile_ptr;
