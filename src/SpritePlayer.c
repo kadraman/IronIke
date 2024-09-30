@@ -91,9 +91,6 @@ void Hit(Sprite* sprite, UINT8 idx) {
 
 void Collected(Sprite* sprite, UINT8 idx) {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
-	// now done at sprite level
-	//PlayFx(CHANNEL_1, 10, 0x4f, 0xc7, 0xf3, 0x73, 0x86);
-	//SpriteManagerRemoveSprite(sprite);
 	data->bullets+=10;
 }
 
@@ -256,7 +253,8 @@ void UPDATE() {
 			// move player to start/checkpoint
 			THIS->x = reset_x;
 			THIS->y = reset_y;
-			data->bullets = 0;
+			// we keep bullets
+			//data->bullets = 0;
 			ScrollRelocateMapTo(0, 0);
 			SetPlayerState(PLAYER_STATE_IDLE);
 			SetAnimationState(WALK_IDLE);
