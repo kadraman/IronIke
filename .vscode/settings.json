@@ -15,7 +15,7 @@
     },
     "files.associations": {
         "hud.h": "c",
-        "zgb_utils.h": "c",
+        "ZGBUtils.h": "c",
         "keys.h": "c",
         "compare": "c",
         "cstddef": "c",

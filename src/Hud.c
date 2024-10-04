@@ -17,7 +17,7 @@ static UINT8 lastBullets = 0;
 
 extern Sprite* player_sprite;
 
-void Hud_Init() BANKED {
+void Hud_Init(void) BANKED {
     PlayerData* data = (PlayerData*)player_sprite->custom_data;
     INIT_HUD(hud);
     // prime the last values so they all get updated
@@ -48,13 +48,13 @@ static void PutU16 (UINT16 v, UINT8 at)
     tens = getTens((UINT8) v);
     ones = v - tens*10;
 
-     UPDATE_HUD_TILE (at++, 0, 4 + thous);
-     UPDATE_HUD_TILE (at++, 0, 4 + hundreds);
-     UPDATE_HUD_TILE (at++, 0, 4 + tens);
-     UPDATE_HUD_TILE (at++, 0, 4 + ones);
+    UPDATE_HUD_TILE (at++, 0, 4 + thous);
+    UPDATE_HUD_TILE (at++, 0, 4 + hundreds);
+    UPDATE_HUD_TILE (at++, 0, 4 + tens);
+    UPDATE_HUD_TILE (at++, 0, 4 + ones);
 }
 
-void Hud_Update() BANKED {
+void Hud_Update(void) BANKED {
     PlayerData* data = (PlayerData*)player_sprite->custom_data;
     UINT8 tens;
     UINT8 ones;
@@ -63,8 +63,8 @@ void Hud_Update() BANKED {
         lastBullets = data->bullets;
         tens = getTens(data->bullets);
         ones = data->bullets - (tens * 10);
-        UPDATE_HUD_TILE (3, 0, 4 + tens);
-        UPDATE_HUD_TILE (4, 0, 4 + ones);
+        //UPDATE_HUD_TILE (3, 0, 4 + tens);
+        UPDATE_HUD_TILE (2, 0, lastBullets = 0 ? 1 : 1 + ones);
     }
 
     //if (lastLives != g_lives) {
@@ -72,7 +72,7 @@ void Hud_Update() BANKED {
         // update HUD lives
         lastLives = data->lives;
         for (UINT8 i = 0; i < MAX_LIVES; ++i) {
-            UPDATE_HUD_TILE(16 + i, 0, i < data->lives ? 1 : 2);
+            UPDATE_HUD_TILE(17 + i, 0, i < data->lives ? 20 : 21);
         }
     }
 

@@ -39,7 +39,7 @@ static void SetPlayerState(PlayerState state) {
 	curPlayerState = state;
 }
 
-static PlayerState GetPlayerState() {
+static PlayerState GetPlayerState(void) {
 	return curPlayerState;
 }
 
@@ -91,7 +91,8 @@ void Hit(Sprite* sprite, UINT8 idx) {
 
 void Collected(Sprite* sprite, UINT8 idx) {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
-	data->bullets+=10;
+	data->bullets+=1;
+	Hud_Update();
 }
 
 void Shoot() {
@@ -214,7 +215,7 @@ void START() {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
 	player_sprite = THIS;
 	data->lives = MAX_LIVES;
-	data->bullets = 0;
+	data->bullets = 6;
 	curPlayerState = PLAYER_STATE_IDLE;
 	accel_y = 0;
 	shoot_cooldown = 0;

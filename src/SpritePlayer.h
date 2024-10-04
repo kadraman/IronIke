@@ -6,7 +6,7 @@
 #include "Sprite.h"
 #include "ZGBMain.h"
 #include "GlobalVars.h"
-#include "zgb_utils.h"
+#include "ZGBUtils.h"
 #include "Hud.h"
 
 #define DEBUG_CONTROLS 0

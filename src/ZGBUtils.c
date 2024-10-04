@@ -1,19 +1,19 @@
-//
-// zgb_utils.c
-//
-
 #include "Sprite.h"
 #include "SpriteManager.h"
 #include "Scroll.h"
 #include "BankManager.h"
 
 #include "asm/types.h"
-#include "zgb_utils.h"
+#include "ZGBUtils.h"
 
 
 // Copied from Scroll.h
-#define SCREEN_TILES_W       20 // 160 >> 3 = 20
-#define SCREEN_TILES_H       18 // 144 >> 3 = 18
+#define SCREEN_TILES_H       DEVICE_SCREEN_HEIGHT
+#if defined(MASTERSYSTEM)
+#define SCREEN_TILES_W       (DEVICE_SCREEN_WIDTH - 1)
+#else
+#define SCREEN_TILES_W       DEVICE_SCREEN_WIDTH
+#endif
 #define SCREEN_PAD_LEFT   1
 #define SCREEN_PAD_RIGHT  2
 #define SCREEN_PAD_TOP    1

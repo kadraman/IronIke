@@ -1,6 +1,5 @@
-//
-// zgb_utils.h
-//
+#ifndef ZGBUTILS_H_
+#define ZGBUTILS_H_
 
 #include <gb/gb.h>
 
@@ -11,3 +10,5 @@
 #include "Sound.h"
 
 void ScrollRelocateMapTo(UINT16 new_x, UINT16 new_y);
+
+#endif // ZGBUTILS_H_
