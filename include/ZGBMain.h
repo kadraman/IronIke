@@ -18,7 +18,7 @@ _SPRITE_COLOR(SpriteEnemy2,     enemy2)\
 _SPRITE_COLOR(SpriteParticle,   particles)\
 _SPRITE_COLOR(SpriteFlag,       flag)\
 _SPRITE_COLOR(SpriteJewell1,    jewell1)\
-_SPRITE_COLOR(SpriteBox1,       box1)\
+_SPRITE_COLOR(SpriteAmmo,       ammo)\
 SPRITE_DEF_END
 
 #include "ZGBMain_Init.h"

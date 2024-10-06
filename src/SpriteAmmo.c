@@ -1,4 +1,3 @@
-#include <stdbool.h>
 #include "Banks/SetAutoBank.h"
 #include "Sound.h"
 #include "main.h"
@@ -7,7 +6,7 @@
 #include "SpritePlayer.h"
 #include "GlobalVars.h"
 
-const UINT8 anim_coin[] = {8, 0, 1, 2, 3, 4, 5, 6, 7};
+const UINT8 anim_ammo[] = {1, 0};
 
 extern Sprite* player_sprite;
 extern UINT8 item_collected;
@@ -18,7 +17,6 @@ typedef struct {
     UINT8 frame;
 } CustomData;
 
-
 void START() {
 	CustomData* data = (CustomData*)THIS->custom_data;
 	if (IsCollected(THIS) != 255) {
@@ -27,7 +25,7 @@ void START() {
 		//data->start_y = THIS->y;
 		//data->frame = 0;
 	}
-	SetSpriteAnim(THIS, anim_coin, 20u);
+	SetSpriteAnim(THIS, anim_ammo, 20u);
 	//SetFrame(THIS, (((THIS->x >> 3) & 0x2) == 0) ? 0 : 1);
 }
 
@@ -36,14 +34,13 @@ void UPDATE() {
 	data->frame++;
 	//THIS->y = data->start_y + (SIN(data->frame + (UINT8)THIS->x) >> 5);
 	if (CheckCollision(THIS, player_sprite)) {
-		TakeCollectable(THIS, ITEM_COIN);
+		TakeCollectable(THIS, ITEM_BULLET);
 		PlayerData* data = (PlayerData*)player_sprite->custom_data;
-		data->coins++;
+		data->bullets++;
 		PlayFx(CHANNEL_1, 10, 0x00, 0x81, 0x83, 0xA3, 0x87);
 		SpriteManagerRemove(THIS_IDX);
 		Hud_Update();
 	}
-
 }
 
 void DESTROY() {

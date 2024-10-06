@@ -128,7 +128,7 @@ void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
 		Hit(sprite, idx);
 	} else if (tile_collision == 51u) { // coin
 		//Collected(sprite, ITEM_COIN, tile_collision);
-	} else if (tile_collision == 52u) { // flag
+	} else if (tile_collision == 125) { // flag
 		// go to next level or complete game
 		if (g_level_current == MAX_LEVEL) {
 			SetState(StateWin);
