@@ -47,6 +47,7 @@ typedef struct {
 	INT8 jump;
 	UINT8 lives;
 	UINT8 bullets;
+	UINT8 coins;
 	UINT8 invincible;
 } PlayerData;
 

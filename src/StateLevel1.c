@@ -41,7 +41,7 @@ void UPDATE() {
 	Hud_Update();
 }
 
-UINT8 IsCollected(Sprite* collectable) BANKED {
+/*UINT8 IsCollected(Sprite* collectable) BANKED {
         UINT8 i;
         for (i = 1; i != collectables_taken[0] + 1; ++i) {
 			if (collectables_taken[i] == collectable->unique_id)
@@ -52,4 +52,4 @@ UINT8 IsCollected(Sprite* collectable) BANKED {
 
 void TakeCollectable(Sprite* collectable) BANKED {
         collectables_taken[++ collectables_taken[0]] = collectable->unique_id;
-}
+}*/

@@ -1,6 +1,7 @@
 #include "ZGBMain.h"
 #include "Math.h"
 
+UINT16 g_player_score = 0;
 UINT8 next_state = StateGame;
 
 UINT8 GetTileReplacement(UINT8* tile_ptr, UINT8* tile) {
@@ -9,7 +10,7 @@ UINT8 GetTileReplacement(UINT8* tile_ptr, UINT8* tile) {
 		switch (*tile_ptr) {
 			case 101: 	return SpriteEnemy1;
 			case 102:	return SpriteEnemy2;
-			case 51: 	return SpriteJewell1;
+			case 51: 	return SpriteCoin;
 			case 52: 	return SpriteFlag;
 		}
 		*tile = *tile_ptr;

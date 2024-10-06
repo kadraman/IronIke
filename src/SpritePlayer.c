@@ -89,9 +89,19 @@ void Hit(Sprite* sprite, UINT8 idx) {
 	}		
 }
 
-void Collected(Sprite* sprite, UINT8 idx) {
+void Collected(Sprite* sprite, ItemType itype, UINT8 idx) {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
-	data->bullets+=1;
+	switch (itype) {
+		case ITEM_BULLET:
+			data->bullets++;
+			break;
+		case ITEM_COIN:
+		PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
+			data->coins++;
+			break;
+		default:
+			break;
+	}
 	Hud_Update();
 }
 
@@ -116,8 +126,8 @@ UINT8 tile_collision;
 void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
 	if (tile_collision == 50u) { // spikes
 		Hit(sprite, idx);
-	} else if (tile_collision == 51u) { // bullet box
-		Collected(sprite, tile_collision);
+	} else if (tile_collision == 51u) { // coin
+		//Collected(sprite, ITEM_COIN, tile_collision);
 	} else if (tile_collision == 52u) { // flag
 		// go to next level or complete game
 		if (g_level_current == MAX_LEVEL) {
@@ -216,6 +226,7 @@ void START() {
 	player_sprite = THIS;
 	data->lives = MAX_LIVES;
 	data->bullets = 6;
+	data->coins = 0;
 	curPlayerState = PLAYER_STATE_IDLE;
 	accel_y = 0;
 	shoot_cooldown = 0;
@@ -297,16 +308,21 @@ void UPDATE() {
 		// TBD
 	}	
 
-	// check sprite collision
+	// check enemy sprite collision
 	for (i = 0u; i != sprite_manager_updatables[0]; ++i) {
 		spr = sprite_manager_sprites[sprite_manager_updatables[i + 1u]];
 		if (spr->type == SpriteEnemy1 || spr->type == SpriteEnemy2) {
 			if (CheckCollision(THIS, spr)) {
 				Hit(THIS, THIS_IDX);
 			}
-		} else if (spr->type == SpriteJewell1) {
+		} 
+		/*else if (spr->type == SpriteJewell1) {
 			if (CheckCollision(THIS, spr)) {
-				Collected(spr, i);
+				Collected(spr, ITEM_BULLET, i);
+			}
+		} else if (spr->type == SpriteCoin) {
+			if (CheckCollision(THIS, spr)) {
+				Collected(spr, ITEM_COIN, i);
 			}
 		} else if (spr->type == SpriteFlag) {
 			if (CheckCollision(THIS, spr)) {
@@ -314,7 +330,7 @@ void UPDATE() {
 				//reset_x = spr->x;
 				//reset_y = spr->y;
 			}
-		}
+		}*/
 	}
 
 	// nothing happening lets revert to idle state
