@@ -25,7 +25,8 @@ typedef enum {
 	PLAYER_STATE_JUMPING,
 	PLAYER_STATE_CLIMBING,
 	PLAYER_STATE_ATTACKING,
-	PLAYER_STATE_HIT
+	PLAYER_STATE_HIT,
+	PLAYER_STATE_TIMEOVER
 } PlayerState;
 
 typedef enum {
@@ -43,11 +44,10 @@ typedef enum {
 } AnimationState;
 
 typedef struct {
-	UINT8 flags;
-	INT8 jump;
 	UINT8 lives;
 	UINT8 bullets;
 	UINT8 coins;
+	UINT8 timeup;
 	UINT8 invincible;
 } PlayerData;
 

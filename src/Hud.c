@@ -15,6 +15,12 @@ IMPORT_MAP (hud);
 static UINT8 lastBullets = 0;
 static UINT8 lastCoins = 0;
 static UINT8 lastLives = 0;
+static UINT16 lastTimer = 0;
+
+// level timer and countdown 
+UINT16 levelMaxTime;        // maximum time for level
+UINT16 timerCountdown;      // timer countdown to be decremented
+static UINT8 timerClock;    // frame counter for single timer tick
 
 extern Sprite* player_sprite;
 
@@ -25,6 +31,9 @@ void Hud_Init(void) BANKED {
     //lastBullets = data->bullets + 1;
     //lastCoins = data->coins + 1;
     //lastLives = data->lives + 1;
+    timerCountdown = levelMaxTime;
+    timerClock = 0;
+    lastTimer = 0;
 }
 
 static UINT8 getTens (UINT8 full) {
@@ -50,16 +59,34 @@ static void PutU16 (UINT16 v, UINT8 at)
     tens = getTens((UINT8) v);
     ones = v - tens*10;
 
-    UPDATE_HUD_TILE (at++, 0, 4 + thous);
-    UPDATE_HUD_TILE (at++, 0, 4 + hundreds);
-    UPDATE_HUD_TILE (at++, 0, 4 + tens);
-    UPDATE_HUD_TILE (at++, 0, 4 + ones);
+    UPDATE_HUD_TILE (at++, 0, 1 + thous);
+    UPDATE_HUD_TILE (at++, 0, 1 + hundreds);
+    UPDATE_HUD_TILE (at++, 0, 1 + tens);
+    UPDATE_HUD_TILE (at++, 0, 1 + ones);
 }
 
 void Hud_Update(void) BANKED {
     PlayerData* data = (PlayerData*)player_sprite->custom_data;
     UINT8 tens;
     UINT8 ones;
+
+    timerClock++;  
+    if (timerClock == 25) {
+        timerClock = 0;
+        if (timerCountdown != 0) {
+            //lastTimer = 1;
+            timerCountdown--;
+        }
+    }
+
+    if (lastTimer != timerCountdown) {
+        PutU16(timerCountdown, 12);
+    }
+
+    if (timerCountdown == 0) {
+        PutU16(timerCountdown, 12);
+        data->timeup = 1;
+    }
 
     ///if (lastBullets != data->bullets) {
         lastBullets = data->bullets;

@@ -14,29 +14,22 @@ UINT8 IsCollected(Sprite* collectable) BANKED;
 void TakeCollectable(Sprite* collectable, ItemType itype) BANKED;
 typedef struct {
 	UINT16 start_y;
-    UINT8 frame;
-} CustomData;
+} CustomData; // TBD
 
 void START() {
 	CustomData* data = (CustomData*)THIS->custom_data;
 	if (IsCollected(THIS) != 255) {
 		SpriteManagerRemove(THIS_IDX);
-	} else {
-		//data->start_y = THIS->y;
-		//data->frame = 0;
 	}
 	SetSpriteAnim(THIS, anim_ammo, 20u);
-	//SetFrame(THIS, (((THIS->x >> 3) & 0x2) == 0) ? 0 : 1);
 }
 
 void UPDATE() {
 	CustomData* data = (CustomData*)THIS->custom_data;
-	data->frame++;
-	//THIS->y = data->start_y + (SIN(data->frame + (UINT8)THIS->x) >> 5);
 	if (CheckCollision(THIS, player_sprite)) {
 		TakeCollectable(THIS, ITEM_BULLET);
-		PlayerData* data = (PlayerData*)player_sprite->custom_data;
-		data->bullets++;
+		PlayerData* player_data = (PlayerData*)player_sprite->custom_data;
+		player_data->bullets++;
 		PlayFx(CHANNEL_1, 10, 0x00, 0x81, 0x83, 0xA3, 0x87);
 		SpriteManagerRemove(THIS_IDX);
 		Hud_Update();

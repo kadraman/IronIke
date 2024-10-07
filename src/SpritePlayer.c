@@ -34,6 +34,9 @@ UINT8 shoot_cooldown;
 UINT8 bg_hidden;
 UINT8 g_player_region;
 
+extern UINT16 timerCountdown;
+extern UINT16 levelMaxTime;
+
 static void SetPlayerState(PlayerState state) {
 	prevPlayerState = curPlayerState;
 	curPlayerState = state;
@@ -227,6 +230,8 @@ void START() {
 	data->lives = MAX_LIVES;
 	data->bullets = 6;
 	data->coins = 0;
+	data->timeup = 0;
+	data->invincible = 0;
 	curPlayerState = PLAYER_STATE_IDLE;
 	accel_y = 0;
 	shoot_cooldown = 0;
@@ -242,6 +247,13 @@ void UPDATE() {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
 	UINT8 i;
 	Sprite* spr;
+
+	if (data->timeup) {
+		data->lives--;
+		Hud_Update();
+		if (data->lives <= 0) { SetState(StateGameOver); }
+		SetState(StateTimeUp);
+	}
 
 	if (GetPlayerState() == PLAYER_STATE_HIT) {
 		accel_y = 0;
@@ -265,8 +277,11 @@ void UPDATE() {
 			// move player to start/checkpoint
 			THIS->x = reset_x;
 			THIS->y = reset_y;
-			// we keep bullets
+			// reset time
+			timerCountdown = levelMaxTime;
+			// keep bullets
 			//data->bullets = 0;
+			data->timeup = 0;
 			ScrollRelocateMapTo(0, 0);
 			SetPlayerState(PLAYER_STATE_IDLE);
 			SetAnimationState(WALK_IDLE);
@@ -308,7 +323,7 @@ void UPDATE() {
 		// TBD
 	}	
 
-	// check enemy sprite collision
+	// check enemy sprite collision - item collission is in each item sprite
 	for (i = 0u; i != sprite_manager_updatables[0]; ++i) {
 		spr = sprite_manager_sprites[sprite_manager_updatables[i + 1u]];
 		if (spr->type == SpriteEnemy1 || spr->type == SpriteEnemy2) {
@@ -316,21 +331,6 @@ void UPDATE() {
 				Hit(THIS, THIS_IDX);
 			}
 		} 
-		/*else if (spr->type == SpriteJewell1) {
-			if (CheckCollision(THIS, spr)) {
-				Collected(spr, ITEM_BULLET, i);
-			}
-		} else if (spr->type == SpriteCoin) {
-			if (CheckCollision(THIS, spr)) {
-				Collected(spr, ITEM_COIN, i);
-			}
-		} else if (spr->type == SpriteFlag) {
-			if (CheckCollision(THIS, spr)) {
-				// example save_point?
-				//reset_x = spr->x;
-				//reset_y = spr->y;
-			}
-		}*/
 	}
 
 	// nothing happening lets revert to idle state

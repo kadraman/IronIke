@@ -15,6 +15,7 @@ IMPORT_MAP(level1);
 IMPORT_MAP(hud);
 
 extern Sprite* player_sprite;
+extern UINT16 levelMaxTime;
 
 // 50 - spikes
 // 125 - flag
@@ -28,6 +29,7 @@ void START() {
 	scroll_target = SpriteManagerAdd(SpritePlayer, 20, 80);
 	InitScroll(BANK(level1), &level1, collision_tiles_l1, 0);
 	scroll_bottom_movement_limit = 120;
+	levelMaxTime = 10;
 
 	Hud_Init();
 

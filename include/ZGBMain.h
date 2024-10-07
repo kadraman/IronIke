@@ -5,6 +5,7 @@
 _STATE(StateGame)\
 _STATE(StateLevel1)\
 _STATE(StateLevel2)\
+_STATE(StateTimeUp)\
 _STATE(StateGameOver)\
 _STATE(StateWin)\
 STATE_DEF_END
