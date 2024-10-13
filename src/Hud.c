@@ -59,7 +59,9 @@ static void PutU16 (UINT16 v, UINT8 at)
     tens = getTens((UINT8) v);
     ones = v - tens*10;
 
-    UPDATE_HUD_TILE (at++, 0, 1 + thous);
+    if (v > 999) {
+        UPDATE_HUD_TILE (at++, 0, 1 + thous);
+    }
     UPDATE_HUD_TILE (at++, 0, 1 + hundreds);
     UPDATE_HUD_TILE (at++, 0, 1 + tens);
     UPDATE_HUD_TILE (at++, 0, 1 + ones);
@@ -80,11 +82,11 @@ void Hud_Update(void) BANKED {
     }
 
     if (lastTimer != timerCountdown) {
-        PutU16(timerCountdown, 12);
+        PutU16(timerCountdown, 13);
     }
 
     if (timerCountdown == 0) {
-        PutU16(timerCountdown, 12);
+        PutU16(timerCountdown, 13);
         data->timeup = 1;
     }
 
@@ -92,16 +94,16 @@ void Hud_Update(void) BANKED {
         lastBullets = data->bullets;
         tens = getTens(data->bullets);
         ones = data->bullets - (tens * 10);
-        //UPDATE_HUD_TILE (3, 0, 4 + tens);
-        UPDATE_HUD_TILE(2, 0, lastBullets = 0 ? 1 : 1 + ones);
+        UPDATE_HUD_TILE (2, 0, 1 + tens);
+        UPDATE_HUD_TILE(3, 0, lastBullets = 0 ? 1 : 1 + ones);
     //}
 
     //if (lastCoins != data->coins) {
         lastCoins = data->coins;
         tens = getTens(data->coins);
         ones = data->coins - (tens * 10);
-        UPDATE_HUD_TILE(6, 0, 1 + tens);
-        UPDATE_HUD_TILE(7, 0, lastCoins = 0 ? 1 : 1 + ones);
+        UPDATE_HUD_TILE(7, 0, 1 + tens);
+        UPDATE_HUD_TILE(8, 0, lastCoins = 0 ? 1 : 1 + ones);
     //}
 
     //if (lastLives != g_lives) {
