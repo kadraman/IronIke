@@ -28,6 +28,7 @@ static PlayerState curPlayerState, prevPlayerState;
 static AnimationState lastAnimState, currentAnimState;
 
 INT16 accel_y;
+UINT8 decel_x;
 UINT8 reset_x;
 UINT8 reset_y;
 UINT8 shoot_cooldown;
@@ -147,6 +148,25 @@ void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
 
 void HandleInput(Sprite* sprite, UINT8 idx) {
 	if (GetPlayerState() == PLAYER_STATE_HIT) return;
+	if (decel_x > 0) {
+		tile_collision = TranslateSprite(sprite, 1 << delta_time, 0);
+		THIS->mirror = NO_MIRROR;
+		CheckCollisionTile(sprite, idx);
+		if (GetPlayerState() != PLAYER_STATE_JUMPING && GetPlayerState() != PLAYER_STATE_CLIMBING) {
+			SetPlayerState(PLAYER_STATE_WALKING);
+			SetAnimationState(WALK);
+		}
+		decel_x--;
+	}
+	if (decel_x < 0) {
+		tile_collision = TranslateSprite(sprite, -1 << delta_time, 0);
+		THIS->mirror = V_MIRROR;
+		CheckCollisionTile(sprite, idx);
+		if (GetPlayerState() != PLAYER_STATE_JUMPING && GetPlayerState() != PLAYER_STATE_CLIMBING) {
+			SetPlayerState(PLAYER_STATE_WALKING);
+			Se
+		decel_x++;
+	}
 	if (KEY_PRESSED(J_RIGHT)) {
 		if (GetPlayerState() == PLAYER_STATE_CLIMBING) {
 			UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 22u) >> 3);
@@ -164,6 +184,9 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 			SetPlayerState(PLAYER_STATE_WALKING);
 			SetAnimationState(WALK);
 		}
+		if (decel_x < MAX_DECEL_X) {
+			decel_x++;
+		}
 	} else if (KEY_PRESSED(J_LEFT)) {
 		if (GetPlayerState() == PLAYER_STATE_CLIMBING) {
 			UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 22u) >> 3);
@@ -180,6 +203,9 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 		if (GetPlayerState() != PLAYER_STATE_JUMPING && GetPlayerState() != PLAYER_STATE_CLIMBING) {
 			SetPlayerState(PLAYER_STATE_WALKING);
 			SetAnimationState(WALK);
+		}
+		if (decel_x > -(MAX_DECEL_X)) {
+			decel_x--;
 		}
 	}
 	if (KEY_PRESSED(J_UP)) {
@@ -234,6 +260,7 @@ void START() {
 	data->invincible = 0;
 	curPlayerState = PLAYER_STATE_IDLE;
 	accel_y = 0;
+	decel_x = 0;
 	shoot_cooldown = 0;
 	bg_hidden = 0;
 	scroll_target = THIS;
@@ -346,7 +373,7 @@ void UPDATE() {
 			SetAnimationState(CLIMB_IDLE);
 		} else {
 			SetAnimationState(WALK_IDLE);
-		}	
+		}
 	} 
 
 

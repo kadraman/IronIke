@@ -11,6 +11,7 @@
 
 #define DEBUG_CONTROLS 0
 
+#define MAX_DECEL_X 10
 #define GROUNDED_BIT 7u
 #define DOUBLE_JUMP_BIT 6u
 #define DEFAULT_ANIM_SPEED 10
