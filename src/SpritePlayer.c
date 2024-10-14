@@ -251,8 +251,12 @@ void UPDATE() {
 	if (data->timeup) {
 		data->lives--;
 		Hud_Update();
-		if (data->lives <= 0) { SetState(StateGameOver); }
+		if (data->lives <= 0) { 
+			SetState(StateGameOver);
+			HIDE_WIN;
+		}
 		SetState(StateTimeUp);
+		HIDE_WIN;
 	}
 
 	if (GetPlayerState() == PLAYER_STATE_HIT) {
@@ -273,7 +277,10 @@ void UPDATE() {
 
 		if (THIS->anim_frame == 4) {
 			SHOW_BKG;
-			if (data->lives <= 0) { SetState(StateGameOver); }
+			if (data->lives <= 0) { 
+				SetState(StateGameOver); 
+				HIDE_WIN;
+			}
 			// move player to start/checkpoint
 			THIS->x = reset_x;
 			THIS->y = reset_y;

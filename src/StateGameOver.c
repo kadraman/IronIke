@@ -14,9 +14,13 @@ IMPORT_MAP(gameover);
 //DECLARE_MUSIC(gameover);
 
 void START() {
-	InitScroll(BANK(gameover), &gameover, 0, 0);
-	HIDE_WIN;
+	//InitScroll(BANK(gameover), &gameover, 0, 0);
+	INIT_BKG(gameover);
 	//PlayMusic(gameover, 0);
+
+	SHOW_SPRITES;
+	SHOW_BKG;
+	HIDE_WIN;
 }
 
 void UPDATE() {

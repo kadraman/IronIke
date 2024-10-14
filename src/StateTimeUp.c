@@ -11,12 +11,11 @@
 
 IMPORT_MAP(timeup);
 
-//DECLARE_MUSIC(gameover);
+//DECLARE_MUSIC(timeup);
 
 void START() {
 	InitScroll(BANK(timeup), &timeup, 0, 0);
-	HIDE_WIN;
-	//PlayMusic(gameover, 0);
+	//PlayMusic(timeup, 0);
 }
 
 void UPDATE() {
