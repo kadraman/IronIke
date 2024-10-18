@@ -80,6 +80,7 @@ static AnimationState GetAnimationState(void) {
 
 void Hit(Sprite* sprite, UINT8 idx) {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
+	if (data->invincible) return;
 	if (GetPlayerState() != PLAYER_STATE_HIT) {
 		SetPlayerState(PLAYER_STATE_HIT);
 		gbt_stop();
@@ -148,6 +149,7 @@ void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
 
 void HandleInput(Sprite* sprite, UINT8 idx) {
 	if (GetPlayerState() == PLAYER_STATE_HIT) return;
+	/*
 	if (decel_x > 0) {
 		tile_collision = TranslateSprite(sprite, 1 << delta_time, 0);
 		THIS->mirror = NO_MIRROR;
@@ -164,9 +166,10 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 		CheckCollisionTile(sprite, idx);
 		if (GetPlayerState() != PLAYER_STATE_JUMPING && GetPlayerState() != PLAYER_STATE_CLIMBING) {
 			SetPlayerState(PLAYER_STATE_WALKING);
-			Se
+			SetAnimationState(WALK);
+		}	
 		decel_x++;
-	}
+	}*/
 	if (KEY_PRESSED(J_RIGHT)) {
 		if (GetPlayerState() == PLAYER_STATE_CLIMBING) {
 			UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 22u) >> 3);
@@ -184,9 +187,9 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 			SetPlayerState(PLAYER_STATE_WALKING);
 			SetAnimationState(WALK);
 		}
-		if (decel_x < MAX_DECEL_X) {
+		/*if (decel_x < MAX_DECEL_X) {
 			decel_x++;
-		}
+		}*/
 	} else if (KEY_PRESSED(J_LEFT)) {
 		if (GetPlayerState() == PLAYER_STATE_CLIMBING) {
 			UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 22u) >> 3);
@@ -204,9 +207,9 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 			SetPlayerState(PLAYER_STATE_WALKING);
 			SetAnimationState(WALK);
 		}
-		if (decel_x > -(MAX_DECEL_X)) {
+		/*if (decel_x > -(MAX_DECEL_X)) {
 			decel_x--;
-		}
+		}*/
 	}
 	if (KEY_PRESSED(J_UP)) {
 		UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 23u) >> 3);
@@ -254,7 +257,7 @@ void START() {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
 	player_sprite = THIS;
 	data->lives = MAX_LIVES;
-	data->bullets = 6;
+	data->bullets = 0;
 	data->coins = 0;
 	data->timeup = 0;
 	data->invincible = 0;
