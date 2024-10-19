@@ -6,7 +6,8 @@
         {
             "label": "Release",
             "type": "shell",
-            "command": "${env:ZGB_PATH}/../env/make-3.81-bin/bin/make",
+            //"command": "${env:ZGB_PATH}/../env/make-3.81-bin/bin/make",#
+            "command": "make",
             "options": {
                 "cwd": "${workspaceFolder}/src"
             },
@@ -23,7 +24,8 @@
         {
             "label": "ReleaseColor",
             "type": "shell",
-            "command": "${env:ZGB_PATH}/../env/make-3.81-bin/bin/make",
+            //"command": "${env:ZGB_PATH}/../env/make-3.81-bin/bin/make",
+            "command": "make",
             "options": {
                 "cwd": "${workspaceFolder}/src"
             },
@@ -40,7 +42,8 @@
         {
             "label": "Debug",
             "type": "shell",
-            "command": "${env:ZGB_PATH}/../env/make-3.81-bin/bin/make",
+            //"command": "${env:ZGB_PATH}/../env/make-3.81-bin/bin/make",
+            "command": "make",
             "options": {
                 "cwd": "${workspaceFolder}/src"
             },
@@ -59,7 +62,8 @@
         {
             "label": "DebugColor",
             "type": "shell",
-            "command": "${env:ZGB_PATH}/../env/make-3.81-bin/bin/make",
+            //"command": "${env:ZGB_PATH}/../env/make-3.81-bin/bin/make",
+            "command": "make",
             "options": {
                 "cwd": "${workspaceFolder}/src"
             },
@@ -78,7 +82,8 @@
         {
             "label": "Clean",
             "type": "shell",
-            "command": "${env:ZGB_PATH}/../env/make-3.81-bin/bin/make",
+            //"command": "${env:ZGB_PATH}/../env/make-3.81-bin/bin/make",
+            "command": "make",
             "options": {
                 "cwd": "${workspaceFolder}/src"
             },
