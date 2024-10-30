@@ -9,11 +9,13 @@
 
 // player animations - the first number indicates the number of frames
 const UINT8 anim_idle[] = {4, 0, 1, 2, 3};		
+const UINT8 anim_attack[] = {4, 17, 18, 19, 20};
 const UINT8 anim_idle_shoot[] = {1, 4};		
-const UINT8 anim_walk[] = {3, 5, 6, 7};
+const UINT8 anim_walk[] = {6, 4, 5, 6, 7, 8, 9};
 const UINT8 anim_walk_shoot[] = {1, 8};
-const UINT8 anim_jump[] = {1, 9};
-const UINT8 anim_fall[] = {1, 9};
+const UINT8 anim_before_or_after_jump[] = {2, 10, 11};
+const UINT8 anim_jump[] = {3, 12, 13, 14};
+const UINT8 anim_fall[] = {3, 15, 16, 17};
 const UINT8 anim_jump_shoot[] = {1, 10};
 const UINT8 anim_climb[] = {2, 12, 13};
 const UINT8 anim_climb_idle[] = {1, 11};
@@ -23,6 +25,7 @@ const UINT8 anim_victory[] = {2, 14, 15}; // TBD
 
 
 Sprite* player_sprite;
+Sprite* attack1_sprite;
 extern Sprite* attack_particle;
 static PlayerState curPlayerState, prevPlayerState;
 static AnimationState lastAnimState, currentAnimState;
@@ -57,13 +60,16 @@ static void SetAnimationState(AnimationState state) {
 	switch (state) {
 		case WALK:    		SetSpriteAnim(THIS, anim_walk, WALK_ANIM_SPEED); break;
 		case WALK_IDLE:    	SetSpriteAnim(THIS, anim_idle, DEFAULT_ANIM_SPEED);	break;
+		case BEFORE_JUMP:	
+		case AFTER_JUMP:	SetSpriteAnim(THIS, anim_before_or_after_jump, 100u); break;
 		case JUMP:    		SetSpriteAnim(THIS, anim_jump, DEFAULT_ANIM_SPEED); break;
 		case FALL:    		SetSpriteAnim(THIS, anim_fall, DEFAULT_ANIM_SPEED); break;
-		case ATTACK:		if (lastAnimState == JUMP) {
-								SetSpriteAnim(THIS, anim_jump_shoot, DEFAULT_ANIM_SPEED);
-							} else {
-								SetSpriteAnim(THIS, anim_walk_shoot, DEFAULT_ANIM_SPEED);
-							}
+		case ATTACK:		//if (lastAnimState == JUMP) {
+							//	SetSpriteAnim(THIS, anim_jump_shoot, DEFAULT_ANIM_SPEED);
+							//} else {
+							//	SetSpriteAnim(THIS, anim_walk_shoot, DEFAULT_ANIM_SPEED);
+							//}
+							SetSpriteAnim(THIS, anim_attack, DEFAULT_ANIM_SPEED);
 							break;
 		case CLIMB:			SetSpriteAnim(THIS, anim_climb, DEFAULT_ANIM_SPEED); break;
 		case CLIMB_IDLE:	SetSpriteAnim(THIS, anim_climb_idle, DEFAULT_ANIM_SPEED); break; 			
@@ -77,16 +83,24 @@ static AnimationState GetAnimationState(void) {
 	return currentAnimState;
 }
 
+void UpdateAttackPos() {
+	attack1_sprite->mirror = THIS->mirror;
+	if(THIS->mirror == V_MIRROR) 
+		attack1_sprite->x = THIS->x - 16u;
+	else
+		attack1_sprite->x = THIS->x + 16u; 
+	attack1_sprite->y = THIS->y;
+}
 
 void Hit(Sprite* sprite, UINT8 idx) {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
 	if (data->invincible) return;
 	if (GetPlayerState() != PLAYER_STATE_HIT) {
 		SetPlayerState(PLAYER_STATE_HIT);
-		gbt_stop();
-		NR52_REG = 0x80; //Enables sound, you should always setup this first
-		NR51_REG = 0xFF; //Enables all channels (left and right)
-		NR50_REG = 0x77; //Max volume
+		//gbt_stop();
+		//NR52_REG = 0x80; //Enables sound, you should always setup this first
+		//NR51_REG = 0xFF; //Enables all channels (left and right)
+		//NR50_REG = 0x77; //Max volume
 		PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
 		SetAnimationState(HIT);
 		data->lives--;
@@ -101,7 +115,7 @@ void Collected(Sprite* sprite, ItemType itype, UINT8 idx) {
 			data->bullets++;
 			break;
 		case ITEM_COIN:
-		PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
+			PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
 			data->coins++;
 			break;
 		default:
@@ -110,11 +124,29 @@ void Collected(Sprite* sprite, ItemType itype, UINT8 idx) {
 	Hud_Update();
 }
 
+void Attack() {
+	SetPlayerState(PLAYER_STATE_ATTACKING);
+	SetAnimationState(ATTACK);
+	attack1_sprite = SpriteManagerAdd(SpriteAttack1, THIS->x, THIS->y);
+	UpdateAttackPos();
+}
+
 void Shoot() {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
 	// no bullets left
-	if (data->bullets == 0) return;
-	SetAnimationState(ATTACK);
+	//if (data->bullets == 0) return;
+	//if (GetPlayerState() != PLAYER_STATE_ATTACKING) {
+		/*Sprite* attack_sprite = SpriteManagerAdd(SpriteAttack1, 0, 0);
+		attack_sprite->mirror = THIS->mirror;
+		if (THIS->mirror) {
+			attack_sprite->x = THIS->x - 2u;
+		} else {
+			attack_sprite->x = THIS->x + 7u; 
+		}*/
+	//}
+	//bullet_sprite->y = THIS->y + 12u;
+	//shoot_cooldown = 10;
+	//data->bullets--;
 	Sprite* bullet_sprite = SpriteManagerAdd(SpriteBullet, 0, 0);
 	bullet_sprite->mirror = THIS->mirror;
 	if (THIS->mirror) {
@@ -210,8 +242,7 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 		/*if (decel_x > -(MAX_DECEL_X)) {
 			decel_x--;
 		}*/
-	}
-	if (KEY_PRESSED(J_UP)) {
+	} else if (KEY_PRESSED(J_UP)) {
 		UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 23u) >> 3);
 		if (tile == 59u || tile == 60u) {
 			accel_y = 0;
@@ -230,7 +261,9 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 			SetAnimationState(CLIMB);
 		}
 	}
-	if (KEY_TICKED(J_A) && (GetPlayerState() != PLAYER_STATE_JUMPING)) {
+	if (KEY_TICKED(J_A) && (GetPlayerState() != PLAYER_STATE_JUMPING && GetPlayerState() != PLAYER_STATE_BEFORE_JUMP && GetPlayerState() != PLAYER_STATE_AFTER_JUMP)) {
+		//SetPlayerState(PLAYER_STATE_BEFORE_JUMP);
+		//SetAnimationState(BEFORE_JUMP);
 		SetPlayerState(PLAYER_STATE_JUMPING);
 		SetAnimationState(JUMP);
 		accel_y = -50;
@@ -240,15 +273,19 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 			SetAnimationState(FALL);
 		}
 	}
-	if (GetPlayerState() != PLAYER_STATE_HIT) {
-		if (shoot_cooldown) {
-			shoot_cooldown -= 1u;
-		} else {
+	if (KEY_TICKED(J_B) && (GetPlayerState() != PLAYER_STATE_ATTACKING && GetPlayerState() != PLAYER_STATE_HIT)) {
+		Attack();
+	}
+	
+	/*if (GetPlayerState() != PLAYER_STATE_HIT) {
+		//if (shoot_cooldown) {
+		//	shoot_cooldown -= 1u;
+		//} else {
 			if (KEY_TICKED(J_B)) {
 				Shoot();
 			}
-		}
-	}
+		//}
+	}*/
 }
 
 //
@@ -271,6 +308,7 @@ void START() {
 	SetAnimationState(currentAnimState);
 	reset_x = 20;
 	reset_y = 80;
+	attack1_sprite = 0;
 }
 
 void UPDATE() {
@@ -289,52 +327,75 @@ void UPDATE() {
 		HIDE_WIN;
 	}
 
-	if (GetPlayerState() == PLAYER_STATE_HIT) {
-		accel_y = 0;
-		SetAnimationState(HIT);	
-		if ((THIS->anim_frame + 1) % 2) {
-			if (!bg_hidden) {
-				HIDE_BKG;
-				bg_hidden = 1;
+	switch (GetPlayerState()) {
+		case PLAYER_STATE_BEFORE_JUMP:
+			if (THIS->anim_frame == 2) {
+				SetPlayerState(PLAYER_STATE_JUMPING);
+				SetAnimationState(JUMP);
+				accel_y = -50;
 			}
-		} else {
-			if (bg_hidden) {
+			break;
+		case PLAYER_STATE_ATTACKING:
+			UpdateAttackPos();
+			if (THIS->anim_frame == 4) {
+				SetAnimationState(lastAnimState);
+			}
+			break;
+		case PLAYER_STATE_HIT:
+			accel_y = 0;
+			SetAnimationState(HIT);	
+			if ((THIS->anim_frame + 1) % 2) {
+				if (!bg_hidden) {
+					HIDE_BKG;
+					bg_hidden = 1;
+				}
+			} else {
+				if (bg_hidden) {
+					SHOW_BKG;
+					bg_hidden = 0;
+					PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
+				}
+			}
+			if (THIS->anim_frame == 4) {
 				SHOW_BKG;
-				bg_hidden = 0;
-				PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
+				if (data->lives <= 0) { 
+					SetState(StateGameOver); 
+					HIDE_WIN;
+				}
+				// move player to start/checkpoint
+				THIS->x = reset_x;
+				THIS->y = reset_y;
+				// reset time
+				timerCountdown = levelMaxTime;
+				// keep bullets
+				//data->bullets = 0;
+				data->timeup = 0;
+				ScrollRelocateMapTo(0, 0);
+				SetPlayerState(PLAYER_STATE_IDLE);
+				SetAnimationState(WALK_IDLE);
 			}
-		}
-
-		if (THIS->anim_frame == 4) {
-			SHOW_BKG;
-			if (data->lives <= 0) { 
-				SetState(StateGameOver); 
-				HIDE_WIN;
+			break;
+		case PLAYER_STATE_CLIMBING: 	
+			UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 22u) >> 3);
+			if (tile != 59u && tile != 60u) {
+				//SetPlayerState(PLAYER_STATE_IDLE);
 			}
-			// move player to start/checkpoint
-			THIS->x = reset_x;
-			THIS->y = reset_y;
-			// reset time
-			timerCountdown = levelMaxTime;
-			// keep bullets
-			//data->bullets = 0;
-			data->timeup = 0;
-			ScrollRelocateMapTo(0, 0);
-			SetPlayerState(PLAYER_STATE_IDLE);
-			SetAnimationState(WALK_IDLE);
-		}	
+			break;
+		default:
+			// nothing happening lets revert to idle state
+			if (keys == 0) {
+				if (GetPlayerState() == PLAYER_STATE_CLIMBING) {
+					SetAnimationState(CLIMB_IDLE);
+				} else {
+					SetAnimationState(WALK_IDLE);
+				}
+			}
 	}
 
-	if (currentAnimState == ATTACK && shoot_cooldown == 0) {
-		SetAnimationState(lastAnimState);
-	}
+	//if (currentAnimState == ATTACK && shoot_cooldown == 0) {
+	//	SetAnimationState(lastAnimState);
+	//}
 
-	if (GetPlayerState() == PLAYER_STATE_CLIMBING) {
-		UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 22u) >> 3);
-		if (tile != 59u && tile != 60u) {
-			//SetPlayerState(PLAYER_STATE_IDLE);
-		}
-	}
 	HandleInput(THIS, THIS_IDX);
 
 	// simple gravity physics until we "collide" with something and not on a ladder
@@ -369,16 +430,6 @@ void UPDATE() {
 			}
 		} 
 	}
-
-	// nothing happening lets revert to idle state
-	if (keys == 0 && (!(GetPlayerState() == PLAYER_STATE_JUMPING || GetPlayerState() == PLAYER_STATE_ATTACKING || GetPlayerState() == PLAYER_STATE_HIT))) {
-		if (curPlayerState == PLAYER_STATE_CLIMBING) {
-			SetAnimationState(CLIMB_IDLE);
-		} else {
-			SetAnimationState(WALK_IDLE);
-		}
-	} 
-
 
 }
 
