@@ -9,13 +9,11 @@
 
 // player animations - the first number indicates the number of frames
 const UINT8 anim_idle[] = {4, 0, 1, 2, 3};		
-const UINT8 anim_attack[] = {4, 17, 18, 19, 20};
 const UINT8 anim_idle_shoot[] = {1, 4};		
-const UINT8 anim_walk[] = {6, 4, 5, 6, 7, 8, 9};
+const UINT8 anim_walk[] = {3, 5, 6, 7};
 const UINT8 anim_walk_shoot[] = {1, 8};
-const UINT8 anim_before_or_after_jump[] = {2, 10, 11};
-const UINT8 anim_jump[] = {3, 12, 13, 14};
-const UINT8 anim_fall[] = {3, 15, 16, 17};
+const UINT8 anim_jump[] = {1, 9};
+const UINT8 anim_fall[] = {1, 9};
 const UINT8 anim_jump_shoot[] = {1, 10};
 const UINT8 anim_climb[] = {2, 12, 13};
 const UINT8 anim_climb_idle[] = {1, 11};
@@ -61,15 +59,15 @@ static void SetAnimationState(AnimationState state) {
 		case WALK:    		SetSpriteAnim(THIS, anim_walk, WALK_ANIM_SPEED); break;
 		case WALK_IDLE:    	SetSpriteAnim(THIS, anim_idle, DEFAULT_ANIM_SPEED);	break;
 		case BEFORE_JUMP:	
-		case AFTER_JUMP:	SetSpriteAnim(THIS, anim_before_or_after_jump, 100u); break;
+		case AFTER_JUMP:	break; // TBD
 		case JUMP:    		SetSpriteAnim(THIS, anim_jump, DEFAULT_ANIM_SPEED); break;
 		case FALL:    		SetSpriteAnim(THIS, anim_fall, DEFAULT_ANIM_SPEED); break;
-		case ATTACK:		//if (lastAnimState == JUMP) {
-							//	SetSpriteAnim(THIS, anim_jump_shoot, DEFAULT_ANIM_SPEED);
-							//} else {
-							//	SetSpriteAnim(THIS, anim_walk_shoot, DEFAULT_ANIM_SPEED);
-							//}
-							SetSpriteAnim(THIS, anim_attack, DEFAULT_ANIM_SPEED);
+		case ATTACK:		if (lastAnimState == JUMP) {
+								SetSpriteAnim(THIS, anim_jump_shoot, DEFAULT_ANIM_SPEED);
+							} else {
+								SetSpriteAnim(THIS, anim_walk_shoot, DEFAULT_ANIM_SPEED);
+							}
+							//SetSpriteAnim(THIS, anim_attack, DEFAULT_ANIM_SPEED);
 							break;
 		case CLIMB:			SetSpriteAnim(THIS, anim_climb, DEFAULT_ANIM_SPEED); break;
 		case CLIMB_IDLE:	SetSpriteAnim(THIS, anim_climb_idle, DEFAULT_ANIM_SPEED); break; 			
@@ -134,7 +132,7 @@ void Attack() {
 void Shoot() {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
 	// no bullets left
-	//if (data->bullets == 0) return;
+	if (data->bullets == 0) return;
 	//if (GetPlayerState() != PLAYER_STATE_ATTACKING) {
 		/*Sprite* attack_sprite = SpriteManagerAdd(SpriteAttack1, 0, 0);
 		attack_sprite->mirror = THIS->mirror;
@@ -274,7 +272,15 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 		}
 	}
 	if (KEY_TICKED(J_B) && (GetPlayerState() != PLAYER_STATE_ATTACKING && GetPlayerState() != PLAYER_STATE_HIT)) {
-		Attack();
+		Shoot();
+	}
+	// nothing happening lets revert to idle state
+	if (keys == 0) {
+		if (GetPlayerState() == PLAYER_STATE_CLIMBING) {
+			SetAnimationState(CLIMB_IDLE);
+		} else {
+			SetAnimationState(WALK_IDLE);
+		}
 	}
 	
 	/*if (GetPlayerState() != PLAYER_STATE_HIT) {
@@ -293,6 +299,7 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 void START() {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
 	player_sprite = THIS;
+	data->flags = 0;
 	data->lives = MAX_LIVES;
 	data->bullets = 0;
 	data->coins = 0;
@@ -382,14 +389,7 @@ void UPDATE() {
 			}
 			break;
 		default:
-			// nothing happening lets revert to idle state
-			if (keys == 0) {
-				if (GetPlayerState() == PLAYER_STATE_CLIMBING) {
-					SetAnimationState(CLIMB_IDLE);
-				} else {
-					SetAnimationState(WALK_IDLE);
-				}
-			}
+
 	}
 
 	//if (currentAnimState == ATTACK && shoot_cooldown == 0) {

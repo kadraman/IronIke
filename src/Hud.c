@@ -81,6 +81,17 @@ void Hud_Update(void) BANKED {
         }
     }
 
+#ifdef DEBUG_HUD
+    // player position
+    PutU16 (player_sprite->x, 6);
+    PutU16 (player_sprite->y, 11);
+    // current tile
+    UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 16u) >> 3);
+    PutU16(tile, 16);
+    // animatiion frame
+    UINT8 af = player_sprite->anim_frame;
+    PutU16(af, 8);
+#else
     if (lastTimer != timerCountdown) {
         PutU16(timerCountdown, 13);
     }
@@ -112,17 +123,6 @@ void Hud_Update(void) BANKED {
             UPDATE_HUD_TILE(17 + i, 0, i < data->lives ? 20 : 21);
         }
     }
-
-#ifdef DEBUG_HUD
-    // player position
-    PutU16 (player_sprite->x, 6);
-    PutU16 (player_sprite->y, 11);
-    // current tile
-    UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 16u) >> 3);
-    PutU16(tile, 16);
-    //UINT8 af = player_sprite->anim_frame;
-    //PutU16(af, 8);
 #endif
-
 }
 

@@ -49,6 +49,7 @@ typedef enum {
 } AnimationState;
 
 typedef struct {
+	UINT8 flags;
 	UINT8 lives;
 	UINT8 bullets;
 	UINT8 coins;
