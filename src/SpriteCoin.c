@@ -27,7 +27,7 @@ void START() {
 		//data->start_y = THIS->y;
 		//data->frame = 0;
 	}
-	SetSpriteAnim(THIS, anim_coin, 20u);
+	SetSpriteAnim(THIS, anim_coin, 30u);
 	//SetFrame(THIS, (((THIS->x >> 3) & 0x2) == 0) ? 0 : 1);
 }
 

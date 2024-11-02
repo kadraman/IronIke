@@ -149,14 +149,14 @@ void Shoot() {
 	//bullet_sprite->y = THIS->y + 12u;
 	//shoot_cooldown = 10;
 	//data->bullets--;
-	Sprite* bullet_sprite = SpriteManagerAdd(SpriteBullet, 0, 0);
+	Sprite* bullet_sprite = SpriteManagerAdd(SpriteKunai, 0, 0);
 	bullet_sprite->mirror = THIS->mirror;
 	if (THIS->mirror) {
 		bullet_sprite->x = THIS->x - 2u;
 	} else {
 		bullet_sprite->x = THIS->x + 7u; 
 	}	
-	bullet_sprite->y = THIS->y + 6u;
+	bullet_sprite->y = THIS->y + 5u;
 	shoot_cooldown = 10;
 	data->bullets--;
 }

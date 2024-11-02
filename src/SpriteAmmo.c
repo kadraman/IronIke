@@ -6,7 +6,7 @@
 #include "SpritePlayer.h"
 #include "GlobalVars.h"
 
-const UINT8 anim_ammo[] = {1, 0};
+const UINT8 anim_ammo[] = {4, 0, 1, 2, 3};
 
 extern Sprite* player_sprite;
 extern UINT8 item_collected;
