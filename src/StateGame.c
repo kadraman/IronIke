@@ -5,6 +5,7 @@
 #include "SpriteManager.h"
 #include "Print.h"
 #include "Sound.h"
+#include "Keys.h"
 
 #include "SpritePlayer.h"
 #include "GlobalVars.h"
@@ -16,11 +17,22 @@ extern UINT16 collectables_taken[];
 extern Sprite* player_sprite;
 extern UINT16 g_player_score;
 
+IMPORT_MAP(titles);
+
 void START() {
-	SetState(g_level_current);
+	HIDE_HUD;
+	InitScroll(BANK(titles), &titles, 0, 0);
+	//gbt_stop();
+	NR52_REG = 0x80; //Enables sound, you should always setup this first
+	NR51_REG = 0xFF; //Enables all channels (left and right)
+	NR50_REG = 0x77; //Max volume
+	//PlayMusic(titles, 0);
 }
 
 void UPDATE() {
+	if (ANY_KEY_PRESSED) {
+		SetState(g_level_current);
+	}
 
 }
 

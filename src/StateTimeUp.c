@@ -20,7 +20,7 @@ void START() {
 }
 
 void UPDATE() {
-	if(KEY_TICKED(J_START) | KEY_TICKED(J_A) | KEY_TICKED(J_B)) {
+	if (ANY_KEY_PRESSED) {
 		SetState(StateGame);
 	}
 }

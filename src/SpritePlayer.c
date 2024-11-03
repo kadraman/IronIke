@@ -18,6 +18,7 @@ const UINT8 anim_fall[] = {3, 18, 19, 20};
 const UINT8 anim_jump_shoot[] = {1, 10};
 const UINT8 anim_climb[] = {2, 26, 27};
 const UINT8 anim_climb_idle[] = {1, 25};
+const UINT8 anim_attack[] = {4, 21, 22, 23, 24};
 const UINT8 anim_push[] = {6, 28, 29, 30, 31, 32, 33};
 const UINT8 anim_hit[] = {6, 34, 35, 36, 34, 35, 36};
 const UINT8 anim_die[] = {8, 37, 38, 39, 40, 41, 42, 43, 44};
@@ -37,6 +38,7 @@ UINT8 reset_y;
 UINT8 shoot_cooldown;
 UINT8 bg_hidden;
 UINT8 g_player_region;
+UINT8 animation_playing;
 
 extern UINT16 timerCountdown;
 extern UINT16 levelMaxTime;
@@ -63,13 +65,15 @@ static void SetAnimationState(AnimationState state) {
 		case BEFORE_JUMP:	
 		case AFTER_JUMP:	break; // TBD
 		case JUMP:    		SetSpriteAnim(THIS, anim_jump, DEFAULT_ANIM_SPEED); break;
+		case DOUBLE_JUMP:	SetSpriteAnim(THIS, anim_double_jump, DEFAULT_ANIM_SPEED); break;
 		case FALL:    		SetSpriteAnim(THIS, anim_fall, DEFAULT_ANIM_SPEED); break;
-		case ATTACK:		if (lastAnimState == JUMP) {
+		case ATTACK:		/*if (lastAnimState == JUMP) {
 								SetSpriteAnim(THIS, anim_jump_shoot, DEFAULT_ANIM_SPEED);
 							} else {
 								SetSpriteAnim(THIS, anim_walk_shoot, DEFAULT_ANIM_SPEED);
-							}
-							//SetSpriteAnim(THIS, anim_attack, DEFAULT_ANIM_SPEED);
+							}*/
+							SetSpriteAnim(THIS, anim_attack, DEFAULT_ANIM_SPEED);
+							animation_playing = 1;
 							break;
 		case CLIMB:			SetSpriteAnim(THIS, anim_climb, DEFAULT_ANIM_SPEED); break;
 		case CLIMB_IDLE:	SetSpriteAnim(THIS, anim_climb_idle, DEFAULT_ANIM_SPEED); break; 			
@@ -86,10 +90,10 @@ static AnimationState GetAnimationState(void) {
 void UpdateAttackPos() {
 	attack1_sprite->mirror = THIS->mirror;
 	if(THIS->mirror == V_MIRROR) 
-		attack1_sprite->x = THIS->x - 16u;
+		attack1_sprite->x = THIS->x - 14u;
 	else
-		attack1_sprite->x = THIS->x + 16u; 
-	attack1_sprite->y = THIS->y;
+		attack1_sprite->x = THIS->x + 14u; 
+	attack1_sprite->y = THIS->y + 2u;
 }
 
 void Die(Sprite* sprite, UINT8 idx) {
@@ -97,10 +101,6 @@ void Die(Sprite* sprite, UINT8 idx) {
 	if (data->invincible) return;
 	if (GetPlayerState() != PLAYER_STATE_DIE) {
 		SetPlayerState(PLAYER_STATE_DIE);
-		//gbt_stop();
-		//NR52_REG = 0x80; //Enables sound, you should always setup this first
-		//NR51_REG = 0xFF; //Enables all channels (left and right)
-		//NR50_REG = 0x77; //Max volume
 		PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
 		SetAnimationState(DIE);
 		data->lives--;
@@ -263,29 +263,37 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 			SetAnimationState(CLIMB);
 		}
 	}
-	if (KEY_TICKED(J_A) && (GetPlayerState() != PLAYER_STATE_JUMPING && GetPlayerState() != PLAYER_STATE_BEFORE_JUMP && GetPlayerState() != PLAYER_STATE_AFTER_JUMP)) {
-		//SetPlayerState(PLAYER_STATE_BEFORE_JUMP);
-		//SetAnimationState(BEFORE_JUMP);
-		SetPlayerState(PLAYER_STATE_JUMPING);
-		SetAnimationState(JUMP);
-		accel_y = -50;
-	} else {
+	if (KEY_PRESSED(J_A)) {
+		if (GetPlayerState() == PLAYER_STATE_JUMPING) {
+			SetPlayerState(PLAYER_STATE_DOUBLE_JUMPING);
+			SetAnimationState(DOUBLE_JUMP);
+			accel_y = -25;
+		} else if (GetPlayerState() == PLAYER_STATE_DOUBLE_JUMPING || GetPlayerState() == PLAYER_STATE_FALLING) {
+			// ignore
+		} else {
+			SetPlayerState(PLAYER_STATE_JUMPING);
+			SetAnimationState(JUMP);
+			accel_y = -50;
+		}
+	} /*else {
 		// check if now FALLING?
 		if ((accel_y >> 4) > 1) {
+			SetPlayerState(PLAYER_STATE_FALLING);
 			SetAnimationState(FALL);
 		}
-	}
-	if (KEY_TICKED(J_B) && (GetPlayerState() != PLAYER_STATE_ATTACKING && GetPlayerState() != PLAYER_STATE_DIE)) {
-		Shoot();
+	}*/
+	if (KEY_PRESSED(J_B) && (GetPlayerState() != PLAYER_STATE_ATTACKING && GetPlayerState() != PLAYER_STATE_DIE)) {
+		//Shoot();
+		Attack();
 	}
 	// nothing happening lets revert to idle state
-	if (keys == 0 && !(GetPlayerState() == PLAYER_STATE_JUMPING || GetPlayerState() == PLAYER_STATE_ATTACKING)) {
+	/*if (keys == 0 && !(GetPlayerState() == PLAYER_STATE_JUMPING || GetPlayerState() == PLAYER_STATE_ATTACKING)) {
 		if (GetPlayerState() == PLAYER_STATE_CLIMBING) {
 			SetAnimationState(CLIMB_IDLE);
 		} else {
 			SetAnimationState(WALK_IDLE);
 		}
-	}
+	}*/
 	
 	/*if (GetPlayerState() != PLAYER_STATE_HIT) {
 		//if (shoot_cooldown) {
@@ -320,6 +328,7 @@ void START() {
 	reset_x = 20;
 	reset_y = 80;
 	attack1_sprite = 0;
+	animation_playing = 0;
 }
 
 void UPDATE() {
@@ -348,8 +357,17 @@ void UPDATE() {
 			break;
 		case PLAYER_STATE_ATTACKING:
 			UpdateAttackPos();
-			if (THIS->anim_frame == 4) {
+			if (THIS->anim_frame == 3) {
+				animation_playing = 0;
 				SetAnimationState(lastAnimState);
+			}
+			break;
+		case PLAYER_STATE_JUMPING:
+		case PLAYER_STATE_DOUBLE_JUMPING:
+			// check if now FALLING?
+			if ((accel_y >> 4) > 1) {
+				SetPlayerState(PLAYER_STATE_FALLING);
+				SetAnimationState(FALL);
 			}
 			break;
 		case PLAYER_STATE_DIE:
@@ -394,6 +412,13 @@ void UPDATE() {
 			}
 			break;
 		default:
+			if (keys == 0 && animation_playing != 0) {
+				if (GetPlayerState() == PLAYER_STATE_CLIMBING) {
+					SetAnimationState(CLIMB_IDLE);
+				} else {
+					SetAnimationState(WALK_IDLE);
+				}
+			}
 
 	}
 

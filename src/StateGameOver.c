@@ -15,13 +15,12 @@ IMPORT_MAP(gameover);
 
 void START() {
 	HIDE_HUD;
-	//InitScroll(BANK(gameover), &gameover, 0, 0);
-	INIT_BKG(gameover);
+	InitScroll(BANK(gameover), &gameover, 0, 0);
 	//PlayMusic(gameover, 0);
 }
 
 void UPDATE() {
-	if(KEY_TICKED(J_START) | KEY_TICKED(J_A) | KEY_TICKED(J_B)) {
+	if (ANY_KEY_PRESSED) {
 		SetState(StateGame);
 	}
 }

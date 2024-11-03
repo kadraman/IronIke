@@ -9,18 +9,18 @@
 
 #include "GlobalVars.h"
 
-IMPORT_MAP(titlescreen);
+IMPORT_MAP(titles);
 
 //DECLARE_MUSIC(titles);
 
 void START() {
-	InitScroll(BANK(titlescreen), &titlescreen, 0, 0);
-	HIDE_WIN;
+	HIDE_HUD;
+	InitScroll(BANK(titles), &titles, 0, 0);
 	//PlayMusic(titles, 0);
 }
 
 void UPDATE() {
-	if(KEY_TICKED(J_START) | KEY_TICKED(J_A) | KEY_TICKED(J_B)) {
+	if (ANY_KEY_PRESSED) {
 		g_level_current = 1;
 		SetState(StateGame);
 	}
