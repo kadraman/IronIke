@@ -1,0 +1,94 @@
+
+<HTML>
+    <HEAD>
+    <title>HTML to 15-bit Gameboy Color Converter</title>
+    
+    <!-- adapted from http://www.javascripter.net/faq/hextorgb.htm -->
+    <!-- Bin2Hex functions from http://stackoverflow.com/questions/7695450/how-to-program-hex2bin-in-javascript -->
+    
+    <script type="text/javascript" language="JavaScript">
+    <!--
+    
+    function cutHex(h) { return (h.charAt(0)=="#") ? h.substring(1,7) : h}
+    function checkBin(n){return/^[01]{1,64}$/.test(n)}
+    function Bin2Hex(n){if(!checkBin(n))return 0;return parseInt(n,2).toString(16)}
+    function PadZero(len, input, str){
+        return Array(len-String(input).length+1).join(str||'0')+input;
+    }	
+    
+    function hexToE(h){
+        // get int values of html hex RGB components
+        var red = parseInt((cutHex(h)).substring(0,2),16);	
+        var green = parseInt((cutHex(h)).substring(2,4),16);
+        var blue = parseInt((cutHex(h)).substring(4,6),16)
+    
+        // reduce to 5-bit integer values
+        red = Math.floor(red/8);
+        console.log(red);
+        green = Math.floor(green/8);
+        console.log(green);
+        blue = Math.floor(blue/8);
+        console.log(blue);
+    
+        // convert 5-bit RGB values to binary and combine
+        var bR = PadZero(5,red.toString(2));
+        console.log(bR);
+        var bG = PadZero(5,green.toString(2));
+        console.log(bG);
+        var bB = PadZero(5,blue.toString(2));
+        console.log(bB);
+        var bBGR = bB + bG + bR;
+    
+        // convert final binary value to hex
+        var hfinal = PadZero(4,Bin2Hex(bBGR).toUpperCase());
+        return hfinal;
+    }
+    
+    function setBgColorById(id,sColor) {
+     var elem;
+     if (document.getElementById) {
+      if (elem=document.getElementById(id)) {
+       if (elem.style) elem.style.backgroundColor=sColor;
+      }
+     }
+    }
+    
+    //-->
+    </script>
+    </HEAD>
+    
+    <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#660099">
+    
+    <p>
+    HTML to 15-bit color converter
+    <p>
+    This is just a dumb little tool I wrote for myself to translate html color values<br/>
+    to the gameboy color hexidecimal 15-bit blue/green/red color palette.<br/>
+    
+    <br/>
+    <form name=rgb>
+    
+    <table border=0 cellpadding=1 cellspacing=1>
+    <tr>
+    <td valign=middle title="Color sample for this hex code"><nobr><span id="colorSample" style="border: 1px solid gray;"><big><big><code style="cursor:default;">&nbsp;&nbsp;&nbsp;</code></big></big></span>&nbsp;</nobr></td>
+    <td valign=top><nobr>
+    
+    <input type=text name=hex size=7 maxlength=7 value="FFFFFF">
+    <input type=button name=btn value="Convert"
+    onclick="setBgColorById('colorSample',this.form.hex.value);
+    this.form.ebit.value = hexToE(this.form.hex.value);
+    ">
+    15-Bit Color: <input type=text name=ebit size=3 style="width:50px;">
+    
+    </nobr>
+    </td></tr></table>
+    
+    </form>
+    
+    <p><br/>
+    View source to see the javascript code I wrote/stole for this.<br/>
+    For more info on 15-bit color, check out: <a href="http://en.wikipedia.org/wiki/High_color">https://en.wikipedia.org/wiki/High_color</a> <br/>
+    
+    </BODY>
+    </HTML>
+    
