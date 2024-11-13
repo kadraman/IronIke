@@ -14,9 +14,8 @@ IMPORT_TILES(font);
 IMPORT_MAP(level2);
 IMPORT_MAP(hud);
 
-// 50 - spikes
-// 125 - flag
-UINT8 collision_tiles_l2[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 50, 125, 0};
+UINT8 collision_tiles_l2[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 
+	TILE_ITEM_SPIKE, TILE_ITEM_FLAG, 0};
 
 void START() {
 

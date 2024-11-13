@@ -163,11 +163,11 @@ void Shoot() {
 
 UINT8 tile_collision;
 void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
-	if (tile_collision == 50u) { // spikes
+	if (tile_collision == TILE_ITEM_SPIKE) { // spikes
 		Die(sprite, idx);
-	} else if (tile_collision == 51u) { // coin
+	} else if (tile_collision == TILE_ITEM_COIN) { // coin
 		//Collected(sprite, ITEM_COIN, tile_collision);
-	} else if (tile_collision == 125) { // flag
+	} else if (tile_collision == TILE_ITEM_FLAG) {
 		// go to next level or complete game
 		if (g_level_current == MAX_LEVEL) {
 			SetState(StateWin);

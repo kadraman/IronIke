@@ -17,9 +17,8 @@ IMPORT_MAP(hud);
 extern Sprite* player_sprite;
 extern UINT16 levelMaxTime;
 
-// 50 - spikes
-// 125 - flag
-UINT8 collision_tiles_l1[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 50, 125, 0};
+UINT8 collision_tiles_l1[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 
+	TILE_ITEM_SPIKE, TILE_ITEM_FLAG, 0};
 
 #define MAX_COLLECTABLES 10
 UINT16 collectables_taken[MAX_COLLECTABLES + 1];

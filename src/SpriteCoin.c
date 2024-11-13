@@ -7,7 +7,7 @@
 #include "SpritePlayer.h"
 #include "GlobalVars.h"
 
-const UINT8 anim_coin[] = {8, 0, 1, 2, 3, 4, 5, 6, 7};
+const UINT8 anim_coin[] = {8, 0, 1, 2, 3, 4, 1, 3, 2};
 
 extern Sprite* player_sprite;
 extern UINT8 item_collected;
