@@ -17,11 +17,11 @@ extern UINT16 collectables_taken[];
 extern Sprite* player_sprite;
 extern UINT16 g_player_score;
 
-IMPORT_MAP(titles);
+IMPORT_MAP(title);
 
 void START() {
 	HIDE_HUD;
-	InitScroll(BANK(titles), &titles, 0, 0);
+	InitScroll(BANK(title), &title, 0, 0);
 	//gbt_stop();
 	NR52_REG = 0x80; //Enables sound, you should always setup this first
 	NR51_REG = 0xFF; //Enables all channels (left and right)

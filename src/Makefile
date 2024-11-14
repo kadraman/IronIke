@@ -3,7 +3,7 @@ PROJECT_NAME = rom
 # Set platforms to build here, spaced separated. (These are in the separate Makefile.targets)
 # They can also be built/cleaned individually: "make gg" and "make gg-clean"
 # Possible are: gb gbc pocket megaduck sms gg
-TARGETS=gbc pocket
+TARGETS=gbc
 
 # Builds all targets sequentially
 all: $(TARGETS)
