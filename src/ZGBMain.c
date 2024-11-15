@@ -10,12 +10,13 @@ UINT8 GetTileReplacement(UINT8* tile_ptr, UINT8* tile) {
 		*tile = 0;
 		switch (*tile_ptr) {
 			// items
-			case 51: 	return SpriteCoin;
-			case 52:	return SpriteAmmo;
+			//case 51: 	return SpriteCoin;
+			//case 52:	return SpriteAmmo;
 			// enemies
-			case 71: 	return SpriteEnemy1;
-			case 72:	return SpriteEnemy2;
-			case 125: 	return SpriteFlag;
+			//case 71: 	return SpriteEnemy1;
+			//case 72:	return SpriteEnemy2;
+			//case 125: 	return SpriteFlag;
+			default: break;
 		}
 		*tile = *tile_ptr;
 	}

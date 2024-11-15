@@ -11,14 +11,16 @@
 #include "Hud.h"
 
 IMPORT_TILES(font);
-IMPORT_MAP(level1);
+//IMPORT_MAP(level1);
+IMPORT_MAP(l1);
 IMPORT_MAP(hud);
 
 extern Sprite* player_sprite;
 extern UINT16 levelMaxTime;
 
-UINT8 collision_tiles_l1[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 
-	TILE_ITEM_SPIKE, TILE_ITEM_FLAG, 0};
+UINT8 collision_tiles_l1[] = {83, 84, 85, 86, 87, 88, 0};
+//UINT8 collision_tiles_l1[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 
+//	TILE_ITEM_SPIKE, TILE_ITEM_FLAG, 0};
 
 #define MAX_COLLECTABLES 10
 UINT16 collectables_taken[MAX_COLLECTABLES + 1];
@@ -26,7 +28,8 @@ UINT16 collectables_taken[MAX_COLLECTABLES + 1];
 void START() {
 	memset(collectables_taken, 0, sizeof(collectables_taken));
 	scroll_target = SpriteManagerAdd(SpritePlayer, 20, 80);
-	InitScroll(BANK(level1), &level1, collision_tiles_l1, 0);
+	//InitScroll(BANK(level1), &level1, collision_tiles_l1, 0);
+	InitScroll(BANK(l1), &l1, collision_tiles_l1, 0);
 	scroll_bottom_movement_limit = 120;
 	levelMaxTime = 100;
 
