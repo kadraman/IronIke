@@ -31,7 +31,7 @@ void START() {
 	//InitScroll(BANK(level1), &level1, collision_tiles_l1, 0);
 	InitScroll(BANK(l1), &l1, collision_tiles_l1, 0);
 	scroll_bottom_movement_limit = 120;
-	levelMaxTime = 100;
+	levelMaxTime = 120;
 
 	Hud_Init();
 

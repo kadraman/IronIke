@@ -59,10 +59,14 @@ static void PutU16 (UINT16 v, UINT8 at)
     tens = getTens((UINT8) v);
     ones = v - tens*10;
 
-    if (v > 999) {
-        UPDATE_HUD_TILE (at++, 0, 1 + thous);
-    }
-    UPDATE_HUD_TILE (at++, 0, 1 + hundreds);
+    //if (v > 999) {
+    //    UPDATE_HUD_TILE (at++, 0, 1 + thous);
+    //}
+    //if (v > 99) {
+        UPDATE_HUD_TILE (at++, 0, 1 + hundreds);
+    //} else {
+    //    UPDATE_HUD_TILE (at++, 0, 1);
+    //}
     UPDATE_HUD_TILE (at++, 0, 1 + tens);
     UPDATE_HUD_TILE (at++, 0, 1 + ones);
 }
@@ -120,7 +124,7 @@ void Hud_Update(void) BANKED {
     if (lastLives != data->lives) {
         lastLives = data->lives;
         for (UINT8 i = 0; i < MAX_LIVES; ++i) {
-            UPDATE_HUD_TILE(17 + i, 0, i < data->lives ? 20 : 21);
+            UPDATE_HUD_TILE(17 + i, 0, i < data->lives ? 18 : 19);
         }
     }
 #endif
