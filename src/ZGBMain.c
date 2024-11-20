@@ -13,6 +13,7 @@ UINT8 GetTileReplacement(UINT8* tile_ptr, UINT8* tile) {
 			//case 51: 	return SpriteCoin;
 			//case 52:	return SpriteAmmo;
 			// enemies
+			case 98:	return SpriteEnemy1;
 			//case 71: 	return SpriteEnemy1;
 			//case 72:	return SpriteEnemy2;
 			//case 125: 	return SpriteFlag;

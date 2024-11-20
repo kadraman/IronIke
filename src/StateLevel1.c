@@ -13,12 +13,12 @@
 IMPORT_TILES(font);
 //IMPORT_MAP(level1);
 IMPORT_MAP(l1);
-IMPORT_MAP(hud);
+//IMPORT_MAP(newhud);
 
 extern Sprite* player_sprite;
 extern UINT16 levelMaxTime;
 
-UINT8 collision_tiles_l1[] = {83, 84, 85, 86, 87, 88, 0};
+UINT8 collision_tiles_l1[] = {83, 84, 85, 86, 87, 88, TILE_ITEM_SPIKE, TILE_ITEM_FLAG, 0};
 //UINT8 collision_tiles_l1[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 
 //	TILE_ITEM_SPIKE, TILE_ITEM_FLAG, 0};
 

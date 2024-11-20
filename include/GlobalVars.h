@@ -4,7 +4,7 @@
 #define MAX_LIVES 3
 #define MAX_LEVEL 2
 
-#define TILE_ITEM_SPIKE	50
+#define TILE_ITEM_SPIKE	97
 #define TILE_ITEM_COIN	51
 #define TILE_ITEM_BOX	52
 #define TILE_ITEM_FLAG	125

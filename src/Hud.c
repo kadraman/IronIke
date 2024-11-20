@@ -9,7 +9,7 @@
 
 #include "GlobalVars.h"
 
-IMPORT_MAP (hud);
+IMPORT_MAP(newhud);
 
 // saved last drawn values, to work out what to update on hud
 static UINT8 lastBullets = 0;
@@ -26,7 +26,7 @@ extern Sprite* player_sprite;
 
 void Hud_Init(void) BANKED {
     PlayerData* data = (PlayerData*)player_sprite->custom_data;
-    INIT_HUD(hud);
+    INIT_HUD(newhud);
     // prime the last values so they all get updated
     lastBullets = 0;
     lastCoins = 0;
@@ -60,15 +60,17 @@ static void PutU16 (UINT16 v, UINT8 at)
     ones = v - tens*10;
 
     //if (v > 999) {
-    //    UPDATE_HUD_TILE (at++, 0, 1 + thous);
-    //}
-    //if (v > 99) {
-        UPDATE_HUD_TILE (at++, 0, 1 + hundreds);
+    //    UPDATE_HUD_TILE(at++, 0, 1 + thous);
     //} else {
-    //    UPDATE_HUD_TILE (at++, 0, 1);
+    //    UPDATE_HUD_TILE(at++, 0, 1);
     //}
-    UPDATE_HUD_TILE (at++, 0, 1 + tens);
-    UPDATE_HUD_TILE (at++, 0, 1 + ones);
+    if (v > 99) {
+        UPDATE_HUD_TILE(at++, 0, 1 + hundreds);
+    } else {
+        UPDATE_HUD_TILE(at++, 0, 1);
+    }
+    UPDATE_HUD_TILE(at++, 0, 1 + tens);
+    UPDATE_HUD_TILE(at++, 0, 1 + ones);
 }
 
 void Hud_Update(void) BANKED {
@@ -92,7 +94,7 @@ void Hud_Update(void) BANKED {
     // current tile
     UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 16u) >> 3);
     PutU16(tile, 16);
-    // animatiion frame
+    // animation frame
     UINT8 af = player_sprite->anim_frame;
     PutU16(af, 8);
 #else
@@ -109,7 +111,7 @@ void Hud_Update(void) BANKED {
         lastBullets = data->bullets;
         tens = getTens(data->bullets);
         ones = data->bullets - (tens * 10);
-        UPDATE_HUD_TILE (2, 0, 1 + tens);
+        UPDATE_HUD_TILE(2, 0, 1 + tens);
         UPDATE_HUD_TILE(3, 0, lastBullets = 0 ? 1 : 1 + ones);
     }
 
