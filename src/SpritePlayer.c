@@ -65,15 +65,13 @@ static void SetAnimationState(AnimationState state) {
 		case BEFORE_JUMP:	
 		case AFTER_JUMP:	break; // TBD
 		case JUMP:    		SetSpriteAnim(THIS, anim_jump, DEFAULT_ANIM_SPEED); break;
-		case DOUBLE_JUMP:	SetSpriteAnim(THIS, anim_double_jump, DEFAULT_ANIM_SPEED); break;
 		case FALL:    		SetSpriteAnim(THIS, anim_fall, DEFAULT_ANIM_SPEED); break;
-		case ATTACK:		/*if (lastAnimState == JUMP) {
+		case ATTACK:		if (lastAnimState == JUMP) {
 								SetSpriteAnim(THIS, anim_jump_shoot, DEFAULT_ANIM_SPEED);
 							} else {
 								SetSpriteAnim(THIS, anim_walk_shoot, DEFAULT_ANIM_SPEED);
-							}*/
-							SetSpriteAnim(THIS, anim_attack, DEFAULT_ANIM_SPEED);
-							animation_playing = 1;
+							}
+							//SetSpriteAnim(THIS, anim_attack, DEFAULT_ANIM_SPEED);
 							break;
 		case CLIMB:			SetSpriteAnim(THIS, anim_climb, DEFAULT_ANIM_SPEED); break;
 		case CLIMB_IDLE:	SetSpriteAnim(THIS, anim_climb_idle, DEFAULT_ANIM_SPEED); break; 			
@@ -263,37 +261,29 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 			SetAnimationState(CLIMB);
 		}
 	}
-	if (KEY_PRESSED(J_A)) {
-		if (GetPlayerState() == PLAYER_STATE_JUMPING) {
-			SetPlayerState(PLAYER_STATE_DOUBLE_JUMPING);
-			SetAnimationState(DOUBLE_JUMP);
-			accel_y = -25;
-		} else if (GetPlayerState() == PLAYER_STATE_DOUBLE_JUMPING || GetPlayerState() == PLAYER_STATE_FALLING) {
-			// ignore
-		} else {
-			SetPlayerState(PLAYER_STATE_JUMPING);
-			SetAnimationState(JUMP);
-			accel_y = -50;
-		}
-	} /*else {
+	if (KEY_TICKED(J_A) && (GetPlayerState() != PLAYER_STATE_JUMPING && GetPlayerState() != PLAYER_STATE_BEFORE_JUMP && GetPlayerState() != PLAYER_STATE_AFTER_JUMP)) {
+		//SetPlayerState(PLAYER_STATE_BEFORE_JUMP);
+		//SetAnimationState(BEFORE_JUMP);
+		SetPlayerState(PLAYER_STATE_JUMPING);
+		SetAnimationState(JUMP);
+		accel_y = -50;
+	} else {
 		// check if now FALLING?
 		if ((accel_y >> 4) > 1) {
-			SetPlayerState(PLAYER_STATE_FALLING);
 			SetAnimationState(FALL);
 		}
-	}*/
-	if (KEY_PRESSED(J_B) && (GetPlayerState() != PLAYER_STATE_ATTACKING && GetPlayerState() != PLAYER_STATE_DIE)) {
-		//Shoot();
+	}
+	if (KEY_TICKED(J_B) && (GetPlayerState() != PLAYER_STATE_ATTACKING && GetPlayerState() != PLAYER_STATE_DIE)) {
 		Attack();
 	}
 	// nothing happening lets revert to idle state
-	/*if (keys == 0 && !(GetPlayerState() == PLAYER_STATE_JUMPING || GetPlayerState() == PLAYER_STATE_ATTACKING)) {
+	if (keys == 0 && !(GetPlayerState() == PLAYER_STATE_JUMPING || GetPlayerState() == PLAYER_STATE_ATTACKING)) {
 		if (GetPlayerState() == PLAYER_STATE_CLIMBING) {
 			SetAnimationState(CLIMB_IDLE);
 		} else {
 			SetAnimationState(WALK_IDLE);
 		}
-	}*/
+	}
 	
 	/*if (GetPlayerState() != PLAYER_STATE_HIT) {
 		//if (shoot_cooldown) {
