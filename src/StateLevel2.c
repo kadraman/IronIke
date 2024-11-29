@@ -21,7 +21,7 @@ void START() {
 
 	scroll_target = SpriteManagerAdd(SpritePlayer, 20, 80);
 	InitScroll(BANK(level2), &level2, collision_tiles_l2, 0);
-	scroll_bottom_movement_limit = 120;
+	scroll_bottom_movement_limit = 110;
 
 	Hud_Init();
 

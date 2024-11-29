@@ -1,1 +1,1 @@
--keep_palette_order -keep_duplicate_tiles -tiles_only
+-keep_palette_order -keep_duplicate_tiles -tiles_only -tile_origin 256
