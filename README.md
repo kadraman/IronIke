@@ -1,11 +1,10 @@
-# Iron Ike
+# Spirit Catcher (Color)
 
-An action platformer for the GameBoy Color written using [CrossZGB](https://github.com/gbdk-2020/CrossZGB/releases)
+An action platformer for the Ninteno GameBoy Color written using [CrossZGB](https://github.com/gbdk-2020/CrossZGB/releases)
 
 ## Building amd Running
 
-_Note: although the project should compile on Windows it is recommended to build
-using Linux or WSL (on Windows)._
+_Note: although the project should compile on Windows/Linux it has been devloped on WSL._
 
 Download CrossZGB from [https://github.com/gbdk-2020/CrossZGB/releases](https://github.com/gbdk-2020/CrossZGB/releases) 
 and extract to a directory, e.g.  `/usr/local/lib/CrossZGB`.
