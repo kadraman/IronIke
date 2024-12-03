@@ -2,6 +2,7 @@
 #define ZGBMAIN_H
 
 #define STATES \
+_STATE(StateSplash)\
 _STATE(StateGame)\
 _STATE(StateLevel1)\
 _STATE(StateLevel2)\

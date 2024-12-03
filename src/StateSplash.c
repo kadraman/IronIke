@@ -9,16 +9,12 @@
 
 #include "GlobalVars.h"
 
-//IMPORT_MAP(titles);
-IMPORT_MAP(title);
-
+IMPORT_MAP(titlescreen);
 //DECLARE_MUSIC(titles);
 
 void START() {
-	HIDE_HUD;
-	//InitScroll(BANK(titles), &titles, 0, 0);
-	InitScroll(BANK(title), &title, 0, 0);
-	//PlayMusic(titles, 0);
+	InitScroll(BANK(titlescreen), &titlescreen, 0, 0);
+	//PlayMusic(titlesreen, 0);
 }
 
 void UPDATE() {

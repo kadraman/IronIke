@@ -3,7 +3,7 @@
 #include "GlobalVars.h"
 
 UINT16 g_player_score = 0;
-UINT8 next_state = StateGame;
+UINT8 next_state = StateSplash;
 
 UINT8 GetTileReplacement(UINT8* tile_ptr, UINT8* tile) {
 	if (current_state == StateLevel1 || current_state == StateLevel2) {

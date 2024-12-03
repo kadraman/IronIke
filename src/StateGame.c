@@ -17,22 +17,23 @@ extern UINT16 collectables_taken[];
 extern Sprite* player_sprite;
 extern UINT16 g_player_score;
 
-IMPORT_MAP(title);
+//IMPORT_MAP(titlescreen);
 
 void START() {
-	HIDE_HUD;
-	InitScroll(BANK(title), &title, 0, 0);
+	//HIDE_HUD;
+	//InitScroll(BANK(titlescreen), &titlescreen, 0, 0);
 	//gbt_stop();
-	NR52_REG = 0x80; //Enables sound, you should always setup this first
-	NR51_REG = 0xFF; //Enables all channels (left and right)
-	NR50_REG = 0x77; //Max volume
+	//NR52_REG = 0x80; //Enables sound, you should always setup this first
+	//NR51_REG = 0xFF; //Enables all channels (left and right)
+	//NR50_REG = 0x77; //Max volume
 	//PlayMusic(titles, 0);
+	SetState(g_level_current+1);
 }
 
 void UPDATE() {
-	if (ANY_KEY_PRESSED) {
-		SetState(g_level_current);
-	}
+	//if (ANY_KEY_PRESSED) {
+	//	SetState(g_level_current);
+	//}
 
 }
 
