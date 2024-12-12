@@ -11,7 +11,7 @@
 
 // saved last drawn values, to work out what to update on hud
 static UINT8 lastBullets = 0;
-static UINT8 lastCoins = 0;
+static UINT8 lastSpirits = 0;
 static UINT8 lastLives = 0;
 static UINT16 lastTimer = 0;
 
@@ -24,12 +24,12 @@ UINT16 tileNum;
 extern Sprite* player_sprite;
 
 void Hud_Init(void) BANKED {
-    IMPORT_MAP(newhud);
+    IMPORT_MAP(hud);
     PlayerData* data = (PlayerData*)player_sprite->custom_data;
-    INIT_HUD(newhud);
+    INIT_HUD(hud);
     // prime the last values so they all get updated
     lastBullets = 0;
-    lastCoins = 0;
+    lastSpirits = 0;
     lastLives = 0;
     timerCountdown = levelMaxTime;
     timerClock = 0;
@@ -99,11 +99,11 @@ void Hud_Update(void) BANKED {
     PutU16(af, 8);
 #else
     if (lastTimer != timerCountdown) {
-        PutU16(timerCountdown, 5);
+        PutU16(timerCountdown, 10);
     }
 
     if (timerCountdown == 0) {
-        PutU16(timerCountdown, 5);
+        PutU16(timerCountdown, 10);
         data->timeup = 1;
     }
 
@@ -111,16 +111,16 @@ void Hud_Update(void) BANKED {
         lastBullets = data->bullets;
         tens = getTens(data->bullets);
         ones = data->bullets - (tens * 10);
-        UPDATE_HUD_TILE(2, 0, 1 + tens);
-        UPDATE_HUD_TILE(3, 0, lastBullets = 0 ? 1 : 1 + ones);
+        //UPDATE_HUD_TILE(2, 0, 1 + tens);
+        //UPDATE_HUD_TILE(3, 0, lastBullets = 0 ? 1 : 1 + ones);
     }
 
-    if (lastCoins != data->coins) {
-        lastCoins = data->coins;
-        tens = getTens(data->coins);
-        ones = data->coins - (tens * 10);
-        UPDATE_HUD_TILE(7, 0, 128 + tens);
-        UPDATE_HUD_TILE(8, 0, lastCoins = 0 ? 1 : 1 + ones);
+    if (lastSpirits != data->spirits) {
+        lastSpirits = data->spirits;
+        tens = getTens(data->spirits);
+        ones = data->spirits - (tens * 10);
+        //UPDATE_HUD_TILE(7, 0, 128 + tens);
+        //UPDATE_HUD_TILE(8, 0, lastSpirits = 0 ? 1 : 1 + ones);
     }
 
     if (lastLives != data->lives) {

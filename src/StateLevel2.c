@@ -11,7 +11,7 @@
 #include "Hud.h"
 
 IMPORT_TILES(font);
-IMPORT_MAP(level2);
+IMPORT_MAP(l1);
 IMPORT_MAP(hud);
 
 UINT8 collision_tiles_l2[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 
@@ -20,7 +20,7 @@ UINT8 collision_tiles_l2[] = {1, 2, 3, 4, 5, 6, 7, 8, 9,
 void START() {
 
 	scroll_target = SpriteManagerAdd(SpritePlayer, 20, 80);
-	InitScroll(BANK(level2), &level2, collision_tiles_l2, 0);
+	InitScroll(BANK(l1), &l1, collision_tiles_l2, 0);
 	scroll_bottom_movement_limit = 110;
 
 	Hud_Init();

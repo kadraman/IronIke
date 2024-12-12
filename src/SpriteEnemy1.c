@@ -24,18 +24,18 @@ void UPDATE() {
 	struct EnemyInfo* data = (struct EnemyInfo*)THIS->custom_data;
 	if (!data->wait)
     {
-		if(THIS->mirror == V_MIRROR) {
+		if (THIS->mirror == V_MIRROR) {
 			//moving left
-			if(TranslateSprite(THIS, -1, 0)) {
+			if (TranslateSprite(THIS, -1, 0)) {
 				THIS->mirror = V_MIRROR;
-			} else	if(!scroll_collisions[GetScrollTile((THIS->x >> 3), (THIS->y >> 3) + 2u)]) {
+			} else if (!scroll_collisions[GetScrollTile((THIS->x >> 3) - 2u, (THIS->y >> 3) + 2u)]) {
 				THIS->mirror = NO_MIRROR;
 			}
 		} else {
 			//moving right
 			if(TranslateSprite(THIS, +1, 0)) {
 				THIS->mirror = V_MIRROR;
-			} else if(!scroll_collisions[GetScrollTile(((THIS->x + THIS->coll_w) >> 3), (THIS->y >> 3) + 2u)]) {
+			} else if (!scroll_collisions[GetScrollTile(((THIS->x + THIS->coll_w) >> 3), (THIS->y >> 3) + 2u)]) {
 				THIS->mirror = V_MIRROR;
 			}
 		}

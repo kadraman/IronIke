@@ -12,6 +12,7 @@
 extern UINT16 g_player_score;
 extern UINT8 g_level_current;
 extern UINT16 g_level_coins;
+extern UINT16 g_level_spirits;
 extern UINT16 g_level_bullets;
 extern UINT8 g_player_region;
 
@@ -22,7 +23,8 @@ typedef struct {
 
 typedef enum {
 	ITEM_COIN,
-	ITEM_BULLET
+	ITEM_BULLET,
+	ITEM_SPIRIT
 } ItemType;
 
 #endif

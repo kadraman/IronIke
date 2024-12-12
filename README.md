@@ -1,4 +1,4 @@
-# Spirit Catcher (Color)
+# Spirit Catcher DX
 
 An action platformer for the Ninteno GameBoy Color written using [CrossZGB](https://github.com/gbdk-2020/CrossZGB/releases)
 

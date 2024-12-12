@@ -12,6 +12,7 @@
 
 UINT8 g_level_current = 1;
 UINT16 g_level_coins = 0;
+UINT16 g_level_spirits = 0;
 UINT16 g_level_bullets = 6;
 extern UINT16 collectables_taken[];
 extern Sprite* player_sprite;
@@ -56,6 +57,8 @@ void TakeCollectable(Sprite* collectable, ItemType itype) BANKED {
 		case ITEM_COIN:
 			g_level_coins++;
 			break;
+		case ITEM_SPIRIT:
+			g_level_spirits++;
 		default:
 			break;
 	}

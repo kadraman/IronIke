@@ -116,6 +116,9 @@ void Collected(Sprite* sprite, ItemType itype, UINT8 idx) {
 			PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
 			data->coins++;
 			break;
+		case ITEM_SPIRIT:
+			data->spirits++;
+			break;
 		default:
 			break;
 	}
@@ -301,10 +304,10 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 void START() {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
 	player_sprite = THIS;
-	data->flags = 0;
 	data->lives = MAX_LIVES;
 	data->bullets = 0;
 	data->coins = 0;
+	data->spirits = 0;
 	data->timeup = 0;
 	data->invincible = 0;
 	curPlayerState = PLAYER_STATE_IDLE;

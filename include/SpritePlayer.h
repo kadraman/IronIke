@@ -55,10 +55,10 @@ typedef enum {
 } AnimationState;
 
 typedef struct {
-	UINT8 flags;
 	UINT8 lives;
 	UINT8 bullets;
 	UINT8 coins;
+	UINT8 spirits;
 	UINT8 timeup;
 	UINT8 invincible;
 } PlayerData;

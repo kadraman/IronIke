@@ -12,17 +12,18 @@ _STATE(StateWin)\
 STATE_DEF_END
 
 #define SPRITES \
-_SPRITE_COLOR(SpritePlayer,	    player)\
-_SPRITE_COLOR(SpriteAttack1,    attack1)\
-_SPRITE_COLOR(SpriteBullet,     bullet)\
-_SPRITE_COLOR(SpriteKunai,      kunai)\
-_SPRITE_COLOR(SpriteCoin,       coin)\
-_SPRITE_COLOR(SpriteEnemy1,     enemy1)\
-_SPRITE_COLOR(SpriteEnemy2,     enemy2)\
-_SPRITE_COLOR(SpriteParticle,   particles)\
-_SPRITE_COLOR(SpriteFlag,       flag)\
-_SPRITE_COLOR(SpriteJewell1,    jewell1)\
-_SPRITE_COLOR(SpriteAmmo,       ammo)\
+_SPRITE(SpritePlayer,	  player,     V_MIRROR)\
+_SPRITE(SpriteFlag,       flag,       FLIP_NONE)\
+_SPRITE(SpriteCoin,       coin,       FLIP_NONE)\
+_SPRITE(SpriteEnemy1,     enemy1,     V_MIRROR)\
+_SPRITE(SpriteSpirit,     spirit,     V_MIRROR)\
+_SPRITE(SpriteAttack1,    attack1,    V_MIRROR)\
+_SPRITE(SpriteBullet,     bullet,     V_MIRROR)\
+_SPRITE(SpriteKunai,      kunai,      V_MIRROR)\
+_SPRITE(SpriteEnemy2,     enemy2,     V_MIRROR)\
+_SPRITE(SpriteParticle,   particles,  FLIP_NONE)\
+_SPRITE(SpriteJewell1,    jewell1,    FLIP_NONE)\
+_SPRITE(SpriteAmmo,       ammo,       FLIP_NONE)\
 SPRITE_DEF_END
 
 #include "ZGBMain_Init.h"
