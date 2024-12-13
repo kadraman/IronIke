@@ -11,7 +11,7 @@ UINT8 next_state = StateGame;
 #endif
 
 UINT8 GetTileReplacement(UINT8* tile_ptr, UINT8* tile) {
-	if (current_state == StateLevel1 || current_state == StateLevel2) {
+	if (current_state == StateGame) {
 		*tile = 0;
 		switch (*tile_ptr) {
 			case 251: *tile = 20; return 255u;

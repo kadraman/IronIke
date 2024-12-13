@@ -17,10 +17,78 @@ UINT16 g_level_bullets = 6;
 extern UINT16 collectables_taken[];
 extern Sprite* player_sprite;
 extern UINT16 g_player_score;
+extern UINT16 levelMaxTime;
 
-//IMPORT_MAP(titlescreen);
+IMPORT_MAP(l1);
+//IMPORT_MAP(level01);
+//IMPORT_MAP(level02);
+//...
+IMPORT_FONT(font);
+//DECLARE_MUSIC(level1);
+
+#define BANKED_MAP(MAP, SECONDS) {BANK(MAP), &MAP, SECONDS}
+#define LEVELS_END {0, 0}
+
+struct MapInfoBanked {
+	UINT8 bank;
+	struct MapInfo* map;
+	UINT8 seconds;
+};
+
+const struct MapInfoBanked levels[] = {
+	BANKED_MAP(l1, 120),
+
+	LEVELS_END
+};
+
+UINT8 collision_tiles[] = {
+	102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 
+	121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139,
+	140, 141, 142, 
+	0
+};
+UINT8 fastest_times[] = { 120 };
+
+UINT8 level_complete;
+
+#define MAX_COLLECTABLES 10
+UINT16 collectables_taken[MAX_COLLECTABLES + 1];
+
+void LocateStuff(UINT8 map_bank, struct MapInfo* map, UINT8* start_x, UINT8* start_y) NONBANKED {
+	UINT8 * data, __save_bank = CURRENT_BANK;
+	SWITCH_ROM(map_bank);
+	data = map->data;
+	for(UINT8 y = 0; y < map->height; ++ y) {
+		for(UINT8 x = 0; x < map->width; ++ x) {
+			UINT8 tile = *data++;
+			if(tile == 252) {          //coins
+				//num_clients++;
+			} else if (tile == 251) {  //player
+				*start_x = x;
+				*start_y = y;
+			}
+		}
+	}
+	SWITCH_ROM(__save_bank);
+}
 
 void START() {
+	static UINT8 start_x, start_y;
+	const struct MapInfoBanked* level = &levels[g_level_current-1];
+	memset(collectables_taken, 0, sizeof(collectables_taken));
+	scroll_top_movement_limit = 72;
+	scroll_bottom_movement_limit = 110;
+	levelMaxTime = level->seconds;
+	level_complete = 0;
+
+	LocateStuff(level->bank, level->map, &start_x, &start_y);
+	scroll_target = SpriteManagerAdd(SpritePlayer, start_x << 3, (start_y - 1) << 3);
+	InitScroll(level->bank, level->map, collision_tiles, 0);
+
+	Hud_Init();
+
+	//INIT_SOUND();
+	//PlayMusic(level1, 1);
 	//HIDE_HUD;
 	//InitScroll(BANK(titlescreen), &titlescreen, 0, 0);
 	//gbt_stop();
@@ -28,14 +96,23 @@ void START() {
 	//NR51_REG = 0xFF; //Enables all channels (left and right)
 	//NR50_REG = 0x77; //Max volume
 	//PlayMusic(titles, 0);
-	SetState(g_level_current+1);
+	
+	//SetState(g_level_current+1);
 }
 
 void UPDATE() {
-	//if (ANY_KEY_PRESSED) {
-	//	SetState(g_level_current);
-	//}
-
+	if (!level_complete) {
+		Hud_Update();
+	} else {
+		if(KEY_TICKED(J_START | J_A | J_B)) {
+			g_level_current++;
+			if(levels[g_level_current-1].map == 0)
+				SetState(StateWin);
+			else
+				SetState(StateGame);
+			HIDE_HUD;
+		}
+	}
 }
 
 UINT8 IsCollected(Sprite* collectable) BANKED {
