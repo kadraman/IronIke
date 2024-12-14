@@ -28,6 +28,7 @@ const UINT8 anim_victory[] = {2, 45, 46}; // TBD
 Sprite* player_sprite;
 Sprite* attack1_sprite;
 extern Sprite* attack_particle;
+extern UINT8 start_x, start_y;
 static PlayerState curPlayerState, prevPlayerState;
 static AnimationState lastAnimState, currentAnimState;
 
@@ -174,10 +175,7 @@ void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
 			SetState(StateWin);
 		} else {
 			g_level_current++;
-			SetState(g_level_current);
-			//reset_x = 32;
-			//reset_y = 112;
-			//SetState(StateGame);
+			SetState(StateGame);
 		}
 	}
 }
@@ -385,8 +383,8 @@ void UPDATE() {
 					HIDE_WIN;
 				} else {
 					// move player to start/checkpoint
-					THIS->x = reset_x;
-					THIS->y = reset_y;
+					THIS->x = start_x;
+					THIS->y = start_y;
 					// reset time
 					timerCountdown = levelMaxTime;
 					// keep bullets

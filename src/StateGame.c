@@ -7,6 +7,7 @@
 #include "Sound.h"
 #include "Keys.h"
 
+#include "StateGame.h"
 #include "SpritePlayer.h"
 #include "GlobalVars.h"
 
@@ -14,6 +15,7 @@ UINT8 g_level_current = 1;
 UINT16 g_level_coins = 0;
 UINT16 g_level_spirits = 0;
 UINT16 g_level_bullets = 6;
+UINT8 start_x, start_y;
 extern UINT16 collectables_taken[];
 extern Sprite* player_sprite;
 extern UINT16 g_player_score;
@@ -44,7 +46,7 @@ const struct MapInfoBanked levels[] = {
 UINT8 collision_tiles[] = {
 	102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 
 	121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139,
-	140, 141, 142, 
+	140, 141, 142, 143, 
 	0
 };
 UINT8 fastest_times[] = { 120 };
@@ -61,9 +63,9 @@ void LocateStuff(UINT8 map_bank, struct MapInfo* map, UINT8* start_x, UINT8* sta
 	for(UINT8 y = 0; y < map->height; ++ y) {
 		for(UINT8 x = 0; x < map->width; ++ x) {
 			UINT8 tile = *data++;
-			if(tile == 252) {          //coins
+			if (tile == TILE_INDEX_COIN) {          //coins
 				//num_clients++;
-			} else if (tile == 251) {  //player
+			} else if (tile == TILE_INDEX_PLAYER) {  //player
 				*start_x = x;
 				*start_y = y;
 			}
@@ -73,7 +75,7 @@ void LocateStuff(UINT8 map_bank, struct MapInfo* map, UINT8* start_x, UINT8* sta
 }
 
 void START() {
-	static UINT8 start_x, start_y;
+	//static UINT8 start_x, start_y;
 	const struct MapInfoBanked* level = &levels[g_level_current-1];
 	memset(collectables_taken, 0, sizeof(collectables_taken));
 	scroll_top_movement_limit = 72;
