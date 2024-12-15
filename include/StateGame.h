@@ -4,7 +4,7 @@
 //#define MAX_LIVES 3
 //#define MAX_LEVEL 2
 
-#define TILE_INDEX_EMPTY    20
+#define TILE_INDEX_BG       27
 #define TILE_INDEX_PLAYER   249
 #define TILE_INDEX_GOAL     250
 #define TILE_INDEX_COIN     251
