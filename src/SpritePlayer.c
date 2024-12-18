@@ -10,25 +10,26 @@
 // player animations - the first number indicates the number of frames
 const UINT8 anim_idle[] = {4, 0, 1, 2, 3};		
 const UINT8 anim_idle_shoot[] = {1, 18};		
-const UINT8 anim_walk[] = {3, 5, 6, 7};
+const UINT8 anim_walk[] = {6, 4, 5, 6, 7, 8, 9};
 const UINT8 anim_walk_shoot[] = {1, 18};
-const UINT8 anim_jump[] = {3, 12, 13, 14};
-const UINT8 anim_double_jump[] = {3, 15, 16, 17};
-const UINT8 anim_fall[] = {3, 18, 19, 20};
-const UINT8 anim_jump_shoot[] = {1, 10};
-const UINT8 anim_climb[] = {2, 26, 27};
+const UINT8 anim_jump[] = {3, 10, 11, 12};
+//const UINT8 anim_double_jump[] = {3, 15, 16, 17};
+const UINT8 anim_fall[] = {3, 14, 15, 16};
+const UINT8 anim_jump_shoot[] = {1, 13};
+const UINT8 anim_attack[] = {4, 17, 18, 19, 20};
+const UINT8 anim_climb[] = {4, 21, 22, 23, 24};
 const UINT8 anim_climb_idle[] = {1, 25};
-const UINT8 anim_attack[] = {4, 21, 22, 23, 24};
-const UINT8 anim_push[] = {6, 28, 29, 30, 31, 32, 33};
-const UINT8 anim_hit[] = {6, 34, 35, 36, 34, 35, 36};
-const UINT8 anim_die[] = {8, 37, 38, 39, 40, 41, 42, 43, 44};
-const UINT8 anim_victory[] = {2, 45, 46}; // TBD
+const UINT8 anim_push[] = {6, 26, 27, 28, 29, 30, 31};
+const UINT8 anim_hit[] = {4, 32, 34, 33, 34};
+const UINT8 anim_die[] = {4, 35, 36, 37, 38};
+const UINT8 anim_victory[] = {2, 41, 42}; // TBD
 
 
 Sprite* player_sprite;
 Sprite* attack1_sprite;
 extern Sprite* attack_particle;
 extern UINT8 start_x, start_y;
+extern INT16 scroll_x, scroll_y;
 static PlayerState curPlayerState, prevPlayerState;
 static AnimationState lastAnimState, currentAnimState;
 
@@ -40,6 +41,7 @@ UINT8 shoot_cooldown;
 UINT8 bg_hidden;
 UINT8 g_player_region;
 UINT8 animation_playing;
+UINT8 anim_hit_counter;
 
 extern UINT16 timerCountdown;
 extern UINT16 levelMaxTime;
@@ -77,7 +79,7 @@ static void SetAnimationState(AnimationState state) {
 		case CLIMB:			SetSpriteAnim(THIS, anim_climb, DEFAULT_ANIM_SPEED); break;
 		case CLIMB_IDLE:	SetSpriteAnim(THIS, anim_climb_idle, DEFAULT_ANIM_SPEED); break; 			
 		case HIT:			SetSpriteAnim(THIS, anim_hit, HIT_ANIM_SPEED);	break;
-		case DIE:    		SetSpriteAnim(THIS, anim_die, HIT_ANIM_SPEED); break;
+		case DIE:    		SetSpriteAnim(THIS, anim_die, DIE_ANIM_SPEED); break;
 		case VICTORY: 		SetSpriteAnim(THIS, anim_victory, VICTORY_ANIM_SPEED); break;
 	}
 }
@@ -95,16 +97,24 @@ void UpdateAttackPos() {
 	attack1_sprite->y = THIS->y + 2u;
 }
 
-void Die(Sprite* sprite, UINT8 idx) {
+void Hit(Sprite* sprite, UINT8 idx) {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
+	if (GetPlayerState() == PLAYER_STATE_HIT) return;
 	if (data->invincible) return;
-	if (GetPlayerState() != PLAYER_STATE_DIE) {
+	if (data->lives <= 0) {
 		SetPlayerState(PLAYER_STATE_DIE);
 		PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
 		SetAnimationState(DIE);
-		data->lives--;
-		Hud_Update();
-	}		
+		anim_hit_counter = 16;
+		data->death = true;
+	} else {
+		SetPlayerState(PLAYER_STATE_HIT);
+		PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
+		SetAnimationState(HIT);
+		anim_hit_counter = 16;
+		data->lives = data->lives - 1;
+	}
+	Hud_Update();	
 }
 
 void Collected(Sprite* sprite, ItemType itype, UINT8 idx) {
@@ -166,7 +176,7 @@ void Shoot() {
 UINT8 tile_collision;
 void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
 	if (tile_collision == TILE_ITEM_SPIKE) { // spikes
-		Die(sprite, idx);
+		Hit(sprite, idx);
 	} else if (tile_collision == TILE_ITEM_COIN) { // coin
 		//Collected(sprite, ITEM_COIN, tile_collision);
 	} else if (tile_collision == TILE_ITEM_FLAG) {
@@ -181,7 +191,7 @@ void CheckCollisionTile(Sprite* sprite, UINT8 idx) {
 }
 
 void HandleInput(Sprite* sprite, UINT8 idx) {
-	if (GetPlayerState() == PLAYER_STATE_DIE) return;
+	if (GetPlayerState() == PLAYER_STATE_HIT || GetPlayerState() == PLAYER_STATE_DIE) return;
 	/*
 	if (decel_x > 0) {
 		tile_collision = TranslateSprite(sprite, 1 << delta_time, 0);
@@ -274,7 +284,7 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 			SetAnimationState(FALL);
 		}
 	}
-	if (KEY_TICKED(J_B) && (GetPlayerState() != PLAYER_STATE_ATTACKING && GetPlayerState() != PLAYER_STATE_DIE)) {
+	if (KEY_TICKED(J_B) && (GetPlayerState() != PLAYER_STATE_ATTACKING && GetPlayerState() != PLAYER_STATE_HIT && GetPlayerState() != PLAYER_STATE_DIE)) {
 		Attack();
 	}
 	// nothing happening lets revert to idle state
@@ -302,6 +312,7 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 void START() {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
 	player_sprite = THIS;
+	data->death = false;
 	data->lives = MAX_LIVES;
 	data->bullets = 0;
 	data->coins = 0;
@@ -320,6 +331,7 @@ void START() {
 	reset_y = 80;
 	attack1_sprite = 0;
 	animation_playing = 0;
+	anim_hit_counter = 0;
 }
 
 void UPDATE() {
@@ -361,10 +373,14 @@ void UPDATE() {
 				SetAnimationState(FALL);
 			}
 			break;
+		case PLAYER_STATE_HIT:
 		case PLAYER_STATE_DIE:
 			accel_y = 0;
-			SetAnimationState(DIE);	
-			if ((THIS->anim_frame + 1) % 2) {
+			//DrawSprite();
+			//SetAnimationState(DIE);
+			//scroll_target = 0;
+			//TranslateSprite(player_sprite, 0, 10 << delta_time);
+			/*if ((THIS->anim_frame + 1) % 2) {
 				if (!bg_hidden) {
 					HIDE_BKG;
 					bg_hidden = 1;
@@ -375,8 +391,9 @@ void UPDATE() {
 					bg_hidden = 0;
 					PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
 				}
-			}
-			if (THIS->anim_frame == 7) {
+			}*/
+			if (anim_hit_counter == 0) {
+			//if (THIS->anim_frame == 3) {
 				SHOW_BKG;
 				if (data->lives <= 0) { 
 					SetState(StateGameOver); 
@@ -394,6 +411,8 @@ void UPDATE() {
 					SetPlayerState(PLAYER_STATE_IDLE);
 					SetAnimationState(WALK_IDLE);
 				}
+			} else {
+				anim_hit_counter--;
 			}
 			break;
 		case PLAYER_STATE_CLIMBING: 	
@@ -447,7 +466,7 @@ void UPDATE() {
 		spr = sprite_manager_sprites[sprite_manager_updatables[i + 1u]];
 		if (spr->type == SpriteEnemy1 || spr->type == SpriteEnemy2) {
 			if (CheckCollision(THIS, spr)) {
-				Die(THIS, THIS_IDX);
+				Hit(THIS, THIS_IDX);
 			}
 		} 
 	}

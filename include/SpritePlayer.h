@@ -11,14 +11,15 @@
 
 #define DEBUG_CONTROLS 0
 
-#define MAX_DECEL_X 10
+#define MAX_DECEL_X 10u
 #define GROUNDED_BIT 7u
 #define DOUBLE_JUMP_BIT 6u
-#define DEFAULT_ANIM_SPEED 10
-#define WALK_ANIM_SPEED 10
-#define HIT_ANIM_SPEED 10
-#define VICTORY_ANIM_SPEED 8
-#define MAX_BULLETS 255
+#define DEFAULT_ANIM_SPEED 10u
+#define WALK_ANIM_SPEED 10u
+#define HIT_ANIM_SPEED 10u
+#define DIE_ANIM_SPEED 5u
+#define VICTORY_ANIM_SPEED 8u
+#define MAX_BULLETS 255u
 
 typedef enum {
 	PLAYER_STATE_IDLE,
@@ -55,6 +56,7 @@ typedef enum {
 } AnimationState;
 
 typedef struct {
+	UINT8 death;
 	UINT8 lives;
 	UINT8 bullets;
 	UINT8 coins;

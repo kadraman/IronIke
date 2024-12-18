@@ -20,7 +20,6 @@ UINT16 levelMaxTime;        // maximum time for level
 UINT16 timerCountdown;      // timer countdown to be decremented
 static UINT8 timerClock;    // frame counter for single timer tick
 UINT16 tileNum;
-
 extern Sprite* player_sprite;
 
 void Hud_Init(void) BANKED {
