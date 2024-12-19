@@ -16,8 +16,8 @@
 #define DOUBLE_JUMP_BIT 6u
 #define DEFAULT_ANIM_SPEED 10u
 #define WALK_ANIM_SPEED 10u
-#define HIT_ANIM_SPEED 10u
-#define DIE_ANIM_SPEED 5u
+#define HIT_ANIM_SPEED 254u
+#define DIE_ANIM_SPEED 254u
 #define VICTORY_ANIM_SPEED 8u
 #define MAX_BULLETS 255u
 
@@ -56,7 +56,7 @@ typedef enum {
 } AnimationState;
 
 typedef struct {
-	UINT8 death;
+	UINT8 anim_playing;
 	UINT8 lives;
 	UINT8 bullets;
 	UINT8 coins;

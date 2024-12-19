@@ -20,9 +20,9 @@ const UINT8 anim_attack[] = {4, 17, 18, 19, 20};
 const UINT8 anim_climb[] = {4, 21, 22, 23, 24};
 const UINT8 anim_climb_idle[] = {1, 25};
 const UINT8 anim_push[] = {6, 26, 27, 28, 29, 30, 31};
-const UINT8 anim_hit[] = {4, 32, 34, 33, 34};
-const UINT8 anim_die[] = {4, 35, 36, 37, 38};
-const UINT8 anim_victory[] = {2, 41, 42}; // TBD
+const UINT8 anim_hit[] = {6, 32, 33, 34, 32, 33, 34};
+const UINT8 anim_die[] = {15, 32, 33, 34, 32, 33, 34, 35, 36, 37, 38, 38, 38, 38, 38, 38};
+const UINT8 anim_victory[] = {2, 39, 40}; // TBD
 
 
 Sprite* player_sprite;
@@ -40,7 +40,8 @@ UINT8 reset_y;
 UINT8 shoot_cooldown;
 UINT8 bg_hidden;
 UINT8 g_player_region;
-UINT8 animation_playing;
+UINT8 pause_secs;
+UINT8 pause_ticks;
 UINT8 anim_hit_counter;
 
 extern UINT16 timerCountdown;
@@ -78,7 +79,7 @@ static void SetAnimationState(AnimationState state) {
 							break;
 		case CLIMB:			SetSpriteAnim(THIS, anim_climb, DEFAULT_ANIM_SPEED); break;
 		case CLIMB_IDLE:	SetSpriteAnim(THIS, anim_climb_idle, DEFAULT_ANIM_SPEED); break; 			
-		case HIT:			SetSpriteAnim(THIS, anim_hit, HIT_ANIM_SPEED);	break;
+		case HIT:			SetSpriteAnim(THIS, anim_hit, HIT_ANIM_SPEED); break;
 		case DIE:    		SetSpriteAnim(THIS, anim_die, DIE_ANIM_SPEED); break;
 		case VICTORY: 		SetSpriteAnim(THIS, anim_victory, VICTORY_ANIM_SPEED); break;
 	}
@@ -86,6 +87,23 @@ static void SetAnimationState(AnimationState state) {
 
 static AnimationState GetAnimationState(void) {
 	return currentAnimState;
+}
+
+void RestartLevel() {
+	PlayerData* data = (PlayerData*)THIS->custom_data;
+	//SHOW_BKG;
+	// move player to start/checkpoint
+	THIS->x = start_x;
+	THIS->y = start_y;
+	// reset time
+	timerCountdown = levelMaxTime;
+	// keep bullets
+	//data->bullets = 0;
+	data->anim_playing = false;
+	data->timeup = 0;
+	ScrollRelocateMapTo(0, 0);
+	SetPlayerState(PLAYER_STATE_IDLE);
+	//SetAnimationState(WALK_IDLE);
 }
 
 void UpdateAttackPos() {
@@ -100,19 +118,19 @@ void UpdateAttackPos() {
 void Hit(Sprite* sprite, UINT8 idx) {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
 	if (GetPlayerState() == PLAYER_STATE_HIT) return;
+	if (data->anim_playing) return;
 	if (data->invincible) return;
-	if (data->lives <= 0) {
+	if (--data->lives <= 0) {
 		SetPlayerState(PLAYER_STATE_DIE);
 		PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
 		SetAnimationState(DIE);
-		anim_hit_counter = 16;
-		data->death = true;
+		data->anim_playing = true;
+		pause_secs = 5;
 	} else {
 		SetPlayerState(PLAYER_STATE_HIT);
 		PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
 		SetAnimationState(HIT);
-		anim_hit_counter = 16;
-		data->lives = data->lives - 1;
+		data->anim_playing = true;
 	}
 	Hud_Update();	
 }
@@ -312,7 +330,7 @@ void HandleInput(Sprite* sprite, UINT8 idx) {
 void START() {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
 	player_sprite = THIS;
-	data->death = false;
+	data->anim_playing = 0;
 	data->lives = MAX_LIVES;
 	data->bullets = 0;
 	data->coins = 0;
@@ -330,14 +348,24 @@ void START() {
 	reset_x = 20;
 	reset_y = 80;
 	attack1_sprite = 0;
-	animation_playing = 0;
 	anim_hit_counter = 0;
+	pause_secs = 0;
+	pause_ticks = 0;
 }
 
 void UPDATE() {
 	PlayerData* data = (PlayerData*)THIS->custom_data;
 	UINT8 i;
 	Sprite* spr;
+
+	if (pause_secs) {
+		pause_ticks++;
+		if (pause_ticks == 25) {
+			pause_ticks = 0;
+			pause_secs--;
+		}
+		return;
+	}
 
 	if (data->timeup) {
 		data->lives--;
@@ -361,12 +389,12 @@ void UPDATE() {
 		case PLAYER_STATE_ATTACKING:
 			UpdateAttackPos();
 			if (THIS->anim_frame == 3) {
-				animation_playing = 0;
+				//animation_playing = 0;
+				data->anim_playing = 0;
 				SetAnimationState(lastAnimState);
 			}
 			break;
 		case PLAYER_STATE_JUMPING:
-		case PLAYER_STATE_DOUBLE_JUMPING:
 			// check if now FALLING?
 			if ((accel_y >> 4) > 1) {
 				SetPlayerState(PLAYER_STATE_FALLING);
@@ -374,46 +402,19 @@ void UPDATE() {
 			}
 			break;
 		case PLAYER_STATE_HIT:
-		case PLAYER_STATE_DIE:
 			accel_y = 0;
-			//DrawSprite();
-			//SetAnimationState(DIE);
-			//scroll_target = 0;
-			//TranslateSprite(player_sprite, 0, 10 << delta_time);
-			/*if ((THIS->anim_frame + 1) % 2) {
-				if (!bg_hidden) {
-					HIDE_BKG;
-					bg_hidden = 1;
-				}
-			} else {
-				if (bg_hidden) {
-					SHOW_BKG;
-					bg_hidden = 0;
-					PlayFx(CHANNEL_1, 10, 0x5b, 0x7f, 0xf7, 0x15, 0x86);
-				}
-			}*/
-			if (anim_hit_counter == 0) {
-			//if (THIS->anim_frame == 3) {
-				SHOW_BKG;
-				if (data->lives <= 0) { 
-					SetState(StateGameOver); 
-					HIDE_WIN;
-				} else {
-					// move player to start/checkpoint
-					THIS->x = start_x;
-					THIS->y = start_y;
-					// reset time
-					timerCountdown = levelMaxTime;
-					// keep bullets
-					//data->bullets = 0;
-					data->timeup = 0;
-					ScrollRelocateMapTo(0, 0);
-					SetPlayerState(PLAYER_STATE_IDLE);
-					SetAnimationState(WALK_IDLE);
-				}
-			} else {
-				anim_hit_counter--;
+			if (THIS->anim_frame == 5) {
+				data->anim_playing = false;
+				RestartLevel();
 			}
+			return;
+			break;
+		case PLAYER_STATE_DIE:
+			if (THIS->anim_frame == 14) {
+				data->anim_playing = false;
+				SetState(StateGameOver); 
+			}
+			return;
 			break;
 		case PLAYER_STATE_CLIMBING: 	
 			UINT8 tile = GetScrollTile((player_sprite->x + 8u) >> 3, (player_sprite->y + 22u) >> 3);
@@ -422,7 +423,7 @@ void UPDATE() {
 			}
 			break;
 		default:
-			if (keys == 0 && animation_playing != 0) {
+			if (keys == 0 && !data->anim_playing) {
 				if (GetPlayerState() == PLAYER_STATE_CLIMBING) {
 					SetAnimationState(CLIMB_IDLE);
 				} else {
